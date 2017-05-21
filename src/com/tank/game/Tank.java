@@ -3,15 +3,18 @@ package com.tank.game;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
 public class Tank {
 
 	public static BufferedImage image;
-	private Bullet bullet;
+	private ArrayList<Bullet> activeBullets;
+	private ArrayList<Bullet> nonActiveBullets;
+	private final int maxBullet = 5;
 	private int positionx;
 	private int positiony;
 	private int direction;
@@ -23,17 +26,24 @@ public class Tank {
 	public static int SOUTH = 2;
 
 	public Tank() {
-		positionx = 0;
-		positiony = 0;
+		positionx = Window.BORDER;
+		positiony = Window.BORDER;
 		direction = WEST;
 		try {
-			image = ImageIO.read( new File("/Users/Piromsurang/Documents/workspace-java/TankGame/src/com/tank/images/tank.png"));
+			URL tankURL = ClassLoader.getSystemResource("images/tank.png");
+			image = ImageIO.read(tankURL);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		shooted = false;
-		bullet = new Bullet(positionx + image.getWidth(), positiony + image.getHeight());
+		
+		activeBullets = new ArrayList<Bullet>();
+		nonActiveBullets = new ArrayList<Bullet>();
+		for(int i=0; i<maxBullet; i++){
+			activeBullets.add(new Bullet(positionx + image.getWidth(), positiony + image.getHeight()));		
+		}
 	}
+	
 
 	public BufferedImage getImage() {
 		return image;
@@ -54,7 +64,7 @@ public class Tank {
 
 	public void moveUp() {
 		rotate(direction, NORTH);
-		if(!isHitWall()) {
+		if(canMove(NORTH)) {
 			Command c = new CommandUp(positiony);
 			positiony = c.execute();
 		}
@@ -62,7 +72,7 @@ public class Tank {
 
 	public void moveDown() {
 		rotate(direction, SOUTH);
-		if(!isHitWall()) {
+		if(canMove(SOUTH)) {
 			Command c = new CommandDown(positiony);
 			positiony = c.execute();
 		}
@@ -74,7 +84,7 @@ public class Tank {
 		//		AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_BILINEAR);
 		//		image = op.filter(image, null);
 		rotate(direction, WEST);
-		if(!isHitWall()) {
+		if(canMove(WEST)) {
 			Command c = new CommandLeft(positionx);
 			positionx = c.execute();	
 		}
@@ -82,16 +92,22 @@ public class Tank {
 
 	public void moveRight() {
 		rotate(direction, EAST);
-		if(!isHitWall()) {
+		if(canMove(EAST)) {
 			Command c = new CommandRight(positionx);
 			positionx = c.execute();
 		}
 	}
 
-	public Bullet getBullet() {
-		return bullet;
+	public Bullet getActiveBullet() {
+		if(!activeBullets.isEmpty()){
+			return activeBullets.get(0);
+		}
+		return null;
 	}
-
+	
+	public ArrayList<Bullet> getListOfNonActive(){
+		return nonActiveBullets;
+	}
 	public int getPositionx() {
 		return positionx;
 	}
@@ -112,15 +128,28 @@ public class Tank {
 		return direction;
 	}
 
-	public boolean isHitWall() {
-		if(positionx < 0 || positionx > Window.width-image.getWidth()) return true;
-		if(positiony < 0 || positiony > Window.height-image.getHeight()) return true;
-		return false;
+	public boolean canMove(int direction) {
+		if(direction == NORTH && positiony-1 > Window.BORDER){
+			return true;
+		} else if(direction == SOUTH && positiony+1 < Window.height - Window.BORDER - image.getHeight()){
+			return true;
+		} else if(direction == WEST && positionx-1 > Window.BORDER){
+			return true;
+		} else if(direction == EAST && positionx+1 < Window.width - Window.BORDER - image.getWidth()){
+			return true;
+		} else {
+			return false;
+		}
+		
 	}
 	
 	public void shoot() {
-		if(bullet.isActive()) {
-			//bullet.deactivate();
+		Bullet bullet = getActiveBullet();
+		if(bullet != null){
+			bullet.deactivate();
+			nonActiveBullets.add(bullet);
+			activeBullets.remove(bullet);
+			
 			bullet.setFiredAt(System.currentTimeMillis());
 			bullet.setDirection(direction);
 			if(direction == EAST) {
@@ -141,12 +170,16 @@ public class Tank {
 	}
 	
 	public boolean reloadBullet() {
-		if(bullet.hitWall()) {
-			shooted = false;
-			bullet.setPositionx(positionx+image.getWidth()/2);
-			bullet.setPositiony(positiony + image.getHeight()/2);
-			bullet.activate();
-			return true;
+		for(int i=0; i<nonActiveBullets.size(); i++){
+			Bullet bullet = nonActiveBullets.get(i);
+			if(bullet.hitWall()){
+				activeBullets.add(bullet);
+				nonActiveBullets.remove(bullet);
+				bullet.setPositionx(positionx+image.getWidth()/2);
+				bullet.setPositiony(positiony + image.getHeight()/2);
+				bullet.activate();
+				return true;
+			}
 		}
 		return false;
 	}

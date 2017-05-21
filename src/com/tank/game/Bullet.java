@@ -3,6 +3,7 @@ package com.tank.game;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 
 import javax.imageio.ImageIO;
 
@@ -23,7 +24,10 @@ public class Bullet {
 		this.positionx = xPos;
 		this.positiony = yPos;
 		try {
-			image = ImageIO.read( new File("/Users/Piromsurang/Documents/workspace-java/TankGame/src/com/tank/images/bullet.png"));
+			
+			URL bulletURL = ClassLoader.getSystemResource("images/bullet.png");
+			image = ImageIO.read(bulletURL);
+		
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -52,15 +56,16 @@ public class Bullet {
 	}
 	
 	public boolean hitWall() {
-		long time = System.currentTimeMillis();
-		return (time - firedAt) > 1000;
-//		if(positionx < 0 || positionx > Window.width-image.getWidth()) {
-//			return true;
-//		}
-//		if(positiony < 0 || positiony > Window.height-image.getHeight()) {
-//			return true;
-//		}
-//		return false;
+		/*long time = System.currentTimeMillis();
+		return (time - firedAt) > 1000;*/
+		if(positionx < Window.BORDER || positionx > Window.width - Window.BORDER -image.getWidth()) {
+			return true;
+		}
+		if(positiony < Window.BORDER || positiony > Window.height - Window.BORDER -image.getHeight()) {
+			return true;
+		}
+		
+		return false;
 	}
 	
 	public void deactivate() {
