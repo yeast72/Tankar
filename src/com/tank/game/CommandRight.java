@@ -10,7 +10,7 @@ public class CommandRight implements Command {
 
 	@Override
 	public int execute() {
-		position += 1;
+		position += Tank.velocity;
 		if(position > Window.width - Tank.image.getWidth()) position = Window.width-Tank.image.getWidth();
 		return position;
 	}

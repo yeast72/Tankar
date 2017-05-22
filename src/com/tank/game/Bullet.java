@@ -3,30 +3,44 @@ package com.tank.game;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 
 import javax.imageio.ImageIO;
 
 public class Bullet {
 	
 	public static BufferedImage image;
-	private int positionx;
-	private int positiony;
+	private int xPosition;
+	private int yPosition;
 	private long firedAt;
 	private boolean active;
 	private int direction;
+	private boolean shooted;
 	
-	private final int velocity = 2;
+	private final int velocity = 3;
 
 
 	public Bullet(int xPos, int yPos){
 		active = true;
-		this.positionx = xPos;
-		this.positiony = yPos;
+		this.xPosition = xPos;
+		this.yPosition = yPos;
 		try {
-			image = ImageIO.read( new File("/Users/Piromsurang/Documents/workspace-java/TankGame/src/com/tank/images/bullet.png"));
+			
+			URL bulletURL = ClassLoader.getSystemResource("images/bullet.png");
+			image = ImageIO.read(bulletURL);
+		
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		shooted = false;
+	}
+	
+	public boolean isShooted() {
+		return shooted;
+	}
+	
+	public void setShooted(boolean a) {
+		shooted = a;
 	}
 	
 	public BufferedImage getImage() {
@@ -34,17 +48,21 @@ public class Bullet {
 	}
 	
 	public void move() {
-		if(!hitWall()) {
+		if(!hitWall() && shooted) {
 			if(direction == Tank.EAST) {
-				positionx += velocity;
+				xPosition += velocity;
 			} else if(direction == Tank.WEST) {
-				positionx -= velocity;
+				xPosition -= velocity;
 			} else if(direction == Tank.NORTH) {
-				positiony -= velocity;
+				yPosition -= velocity;
 			} else if(direction == Tank.SOUTH) {
-				positiony += velocity;
+				yPosition += velocity;
 			}
-		} 
+		} else {
+			setShooted(false);
+			xPosition = xPosition + Tank.image.getWidth()/2;
+			yPosition = yPosition + Tank.image.getHeight()/2;
+		}
 	}
 	
 	public void activate() {
@@ -52,15 +70,14 @@ public class Bullet {
 	}
 	
 	public boolean hitWall() {
-		long time = System.currentTimeMillis();
-		return (time - firedAt) > 1000;
-//		if(positionx < 0 || positionx > Window.width-image.getWidth()) {
-//			return true;
-//		}
-//		if(positiony < 0 || positiony > Window.height-image.getHeight()) {
-//			return true;
-//		}
-//		return false;
+		if(xPosition < Window.BORDER || xPosition > Window.width - Window.BORDER -image.getWidth()) {
+			return true;
+		}
+		if(yPosition < Window.BORDER || yPosition > Window.height - Window.BORDER -image.getHeight()) {
+			return true;
+		}
+		
+		return false;
 	}
 	
 	public void deactivate() {
@@ -76,19 +93,19 @@ public class Bullet {
 	}
 	
 	public int getPositionx() {
-		return positionx;
+		return xPosition;
 	}
 
 	public int getPositiony() {
-		return positiony;
+		return yPosition;
 	}
 
 	public void setPositionx(int positionx) {
-		this.positionx = positionx;
+		this.xPosition = positionx;
 	}
 
 	public void setPositiony(int positiony) {
-		this.positiony = positiony;
+		this.yPosition = positiony;
 	}
 
 	public int getDirection() {

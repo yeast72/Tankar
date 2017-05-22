@@ -3,36 +3,55 @@ package com.tank.game;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
 public class Tank {
 
 	public static BufferedImage image;
-	private Bullet bullet;
-	private int positionx;
-	private int positiony;
+	private ArrayList<Bullet> activeBullets;
+	private ArrayList<Bullet> nonActiveBullets;
+	private final int maxBullet = 5;
+	private int xPosition;
+	private int yPosition;
 	private int direction;
-	public static boolean shooted;
+	private long startReloadingTime;
+	private boolean reloadingState;
+
+	public static int velocity;
 
 	public static int WEST = 3;
 	public static int EAST = 1;
 	public static int NORTH = 0;
 	public static int SOUTH = 2;
+	public static int NORMAL_VELOCITY = 2;
+	public static int REDUCED_VELOCITY = 1;
 
 	public Tank() {
-		positionx = 0;
-		positiony = 0;
+		xPosition = Window.BORDER;
+		yPosition = Window.BORDER;
 		direction = WEST;
+		velocity = NORMAL_VELOCITY;
 		try {
-			image = ImageIO.read( new File("/Users/Piromsurang/Documents/workspace-java/TankGame/src/com/tank/images/tank.png"));
+			URL tankURL = ClassLoader.getSystemResource("images/tank.png");
+			image = ImageIO.read(tankURL);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		shooted = false;
-		bullet = new Bullet(positionx + image.getWidth(), positiony + image.getHeight());
+		reloadingState = false;
+		activeBullets = new ArrayList<Bullet>();
+		nonActiveBullets = new ArrayList<Bullet>();
+		activeBullets.add(new Bullet(xPosition + image.getWidth()/2, yPosition + image.getHeight()/2));
+		for(int i=0; i<maxBullet-1; i++){
+			nonActiveBullets.add(new Bullet(xPosition + image.getWidth()/2, yPosition + image.getHeight()/2));		
+		}
+	}
+
+	public boolean isReloading() {
+		return reloadingState;
 	}
 
 	public BufferedImage getImage() {
@@ -54,100 +73,140 @@ public class Tank {
 
 	public void moveUp() {
 		rotate(direction, NORTH);
-		if(!isHitWall()) {
-			Command c = new CommandUp(positiony);
-			positiony = c.execute();
+		if(canMove(NORTH)) {
+			Command c = new CommandUp(yPosition);
+			yPosition = c.execute();
 		}
 	}
 
 	public void moveDown() {
 		rotate(direction, SOUTH);
-		if(!isHitWall()) {
-			Command c = new CommandDown(positiony);
-			positiony = c.execute();
+		if(canMove(SOUTH)) {
+			Command c = new CommandDown(yPosition);
+			yPosition = c.execute();
 		}
 	}
 
 	public void moveLeft() {
-		//		AffineTransform tx = new AffineTransform();
-		//		tx.rotate(Math.PI/4, image.getWidth()/2, image.getHeight()/2);
-		//		AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_BILINEAR);
-		//		image = op.filter(image, null);
 		rotate(direction, WEST);
-		if(!isHitWall()) {
-			Command c = new CommandLeft(positionx);
-			positionx = c.execute();	
+		if(canMove(WEST)) {
+			Command c = new CommandLeft(xPosition);
+			xPosition = c.execute();	
 		}
 	}
 
 	public void moveRight() {
 		rotate(direction, EAST);
-		if(!isHitWall()) {
-			Command c = new CommandRight(positionx);
-			positionx = c.execute();
+		if(canMove(EAST)) {
+			Command c = new CommandRight(xPosition);
+			xPosition = c.execute();
 		}
 	}
 
-	public Bullet getBullet() {
-		return bullet;
+	public Bullet getActiveBullet() {
+		if(!activeBullets.isEmpty()){
+			return activeBullets.get(0);
+		}
+		return null;
 	}
 
+	public ArrayList<Bullet> getListOfNonActive(){
+		return nonActiveBullets;
+	}
 	public int getPositionx() {
-		return positionx;
+		return xPosition;
 	}
 
 	public int getPositiony() {
-		return positiony;
+		return yPosition;
 	}
 
 	public void setPositionx(int positionx) {
-		this.positionx = positionx;
+		this.xPosition = positionx;
 	}
 
 	public void setPositiony(int positiony) {
-		this.positiony = positiony;
+		this.yPosition = positiony;
 	}
-	
+
 	public int getDirection() {
 		return direction;
 	}
 
-	public boolean isHitWall() {
-		if(positionx < 0 || positionx > Window.width-image.getWidth()) return true;
-		if(positiony < 0 || positiony > Window.height-image.getHeight()) return true;
-		return false;
+	public boolean canMove(int direction) {
+		if(direction == NORTH && yPosition-1 > Window.BORDER){
+			return true;
+		} else if(direction == SOUTH && yPosition+1 < Window.height - Window.BORDER - image.getHeight()){
+			return true;
+		} else if(direction == WEST && xPosition-1 > Window.BORDER){
+			return true;
+		} else if(direction == EAST && xPosition+1 < Window.width - Window.BORDER - image.getWidth()){
+			return true;
+		} else {
+			return false;
+		}
+
 	}
-	
+
+	public void setVelocity(int v) {
+		velocity = v;
+	}
+
+	public int getVelocity() {
+		return velocity;
+	}
+
 	public void shoot() {
-		if(bullet.isActive()) {
-			//bullet.deactivate();
+		Bullet bullet = getActiveBullet();
+		if(bullet != null){
+			bullet.deactivate();
+			bullet.setShooted(true);
+			nonActiveBullets.add(bullet);
+			activeBullets.remove(bullet);
+
 			bullet.setFiredAt(System.currentTimeMillis());
 			bullet.setDirection(direction);
 			if(direction == EAST) {
-				bullet.setPositionx(positionx + image.getWidth());
-				bullet.setPositiony(positiony - 5 + image.getHeight()/2 );
+				bullet.setPositionx(xPosition + image.getWidth());
+				bullet.setPositiony(yPosition - 5 + image.getHeight()/2 );
 			} else if(direction == WEST) {
-				bullet.setPositionx(positionx - bullet.getImage().getWidth());
-				bullet.setPositiony(positiony - 5 + image.getHeight()/2 );
+				bullet.setPositionx(xPosition - bullet.getImage().getWidth());
+				bullet.setPositiony(yPosition - 5 + image.getHeight()/2 );
 			} else if(direction == NORTH) {
-				bullet.setPositionx(positionx - 5 + image.getWidth()/2);
-				bullet.setPositiony(positiony - bullet.getImage().getHeight());
+				bullet.setPositionx(xPosition - 5 + image.getWidth()/2);
+				bullet.setPositiony(yPosition - bullet.getImage().getHeight());
 			} else if(direction == SOUTH) {
-				bullet.setPositionx(positionx - 5 + image.getWidth() / 2);
-				bullet.setPositiony(positiony + image.getHeight());
+				bullet.setPositionx(xPosition - 5 + image.getWidth() / 2);
+				bullet.setPositiony(yPosition + image.getHeight());
 			}
-			shooted = true;
 		}
 	}
-	
-	public boolean reloadBullet() {
-		if(bullet.hitWall()) {
-			shooted = false;
-			bullet.setPositionx(positionx+image.getWidth()/2);
-			bullet.setPositiony(positiony + image.getHeight()/2);
-			bullet.activate();
-			return true;
+
+	public void reloadBullet() {
+		if(!isReloading()){
+			startReloadingTime = System.currentTimeMillis();
+			reloadingState = true;
+			setVelocity(REDUCED_VELOCITY);
+			System.out.println(startReloadingTime);
+		}
+	}
+
+	public boolean checkIfRelaodingFinished() {
+		if(isReloading()) {
+			long now = System.currentTimeMillis();
+			double delta = (now - startReloadingTime)/1000;
+			System.out.println(delta);
+			if(delta >= 5) {
+				reloadingState = false;
+				setVelocity(NORMAL_VELOCITY);
+				Bullet bullet = nonActiveBullets.get(0);
+				bullet.activate();
+				nonActiveBullets.remove(bullet);
+				activeBullets.add(bullet);			
+				return true;
+			} 
 		}
 		return false;
 	}
+
 }

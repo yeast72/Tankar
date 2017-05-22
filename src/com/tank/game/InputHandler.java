@@ -12,6 +12,7 @@ public class InputHandler implements KeyListener {
 	private Key left = new Key();
 	private Key right = new Key();
 	private Key space = new Key();
+	private Key reload = new Key();
 
 	public InputHandler(Window window) {
 		window.requestFocus();
@@ -44,7 +45,13 @@ public class InputHandler implements KeyListener {
 			right.toggle(isPressed);
 		} else if(keyCode == KeyEvent.VK_SPACE) {
 			space.toggle(isPressed);
+		} else if(keyCode == KeyEvent.VK_R) {
+			reload.toggle(isPressed);
 		}
+	}
+	
+	public Key getReload() {
+		return reload;
 	}
 	
 	public Key getSpace() {

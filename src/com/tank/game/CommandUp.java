@@ -10,7 +10,7 @@ public class CommandUp implements Command {
 
 	@Override
 	public int execute() {
-		position -= 1;
+		position -= Tank.velocity;
 		if(position < 0) position = 0;
 		return position;
 	}
