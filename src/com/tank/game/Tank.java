@@ -195,7 +195,6 @@ public class Tank {
 		if(isReloading()) {
 			long now = System.currentTimeMillis();
 			double delta = (now - startReloadingTime)/1000;
-			System.out.println(delta);
 			if(delta >= 5) {
 				reloadingState = false;
 				setVelocity(NORMAL_VELOCITY);
