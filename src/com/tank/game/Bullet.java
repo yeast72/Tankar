@@ -58,6 +58,7 @@ public class Bullet {
 	public boolean hitWall() {
 		/*long time = System.currentTimeMillis();
 		return (time - firedAt) > 1000;*/
+		System.out.println(positionx+" "+positiony);
 		if(positionx < Window.BORDER || positionx > Window.width - Window.BORDER -image.getWidth()) {
 			return true;
 		}

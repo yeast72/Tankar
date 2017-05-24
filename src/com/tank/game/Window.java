@@ -82,7 +82,7 @@ public class Window extends JFrame implements Runnable {
 		dialog.add(username);
 		dialog.add(new JLabel("Color: "));
 		
-		String[] color = {"Red","Orange","Green"};
+		String[] color = {"Red","Orange","Green", "Gray", "Blue", "Yellow", "Violet"};
 		JComboBox colorChoice = new JComboBox(color);
 		dialog.add(colorChoice);
 		JButton submit = new JButton("Submit");
