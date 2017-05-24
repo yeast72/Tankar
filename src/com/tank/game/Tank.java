@@ -55,6 +55,7 @@ public class Tank {
 	public boolean isReloading() {
 		return reloadingState;
 	}
+	
 
 	public BufferedImage getImage() {
 		return image;
@@ -115,6 +116,7 @@ public class Tank {
 	public ArrayList<Bullet> getListOfNonActive(){
 		return nonActiveBullets;
 	}
+
 	public int getPositionx() {
 		return xPosition;
 	}
@@ -147,7 +149,6 @@ public class Tank {
 		} else {
 			return false;
 		}
-
 	}
 
 	public void setVelocity(int v) {
@@ -165,7 +166,6 @@ public class Tank {
 			bullet.setShooted(true);
 			nonActiveBullets.add(bullet);
 			activeBullets.remove(bullet);
-
 			bullet.setDirection(direction);
 			changeBulletDirection(bullet);
 		}

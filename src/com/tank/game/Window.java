@@ -27,12 +27,12 @@ public class Window extends JFrame implements Runnable {
 	public static final int SCALE = 3;
 	public static final int BORDER = 25;
 	public static final String NAME = "Tankar.io";
-
+	
 	private int viewOffset = 10;
 
 	private JPanel drawPanel;
 	private JDialog dialog;
-
+	
 	public boolean running;
 	public int tickCount = 0;
 
@@ -41,6 +41,7 @@ public class Window extends JFrame implements Runnable {
 
 	public Window(){
 		super(NAME);
+		
 
 
 		game = Game.getInstance();
@@ -52,7 +53,7 @@ public class Window extends JFrame implements Runnable {
 		initComponents();
 		this.pack();
 	}
-
+	
 	public void initComponents() {
 		createDialog();
 		drawPanel = new JPanel() {
@@ -71,7 +72,7 @@ public class Window extends JFrame implements Runnable {
 		};
 		add(drawPanel);
 	}
-
+	
 	private void createDialog(){
 		JTextField username = new JTextField(10);
 		dialog = new JDialog();
@@ -81,7 +82,7 @@ public class Window extends JFrame implements Runnable {
 		dialog.add(new JLabel("Username: "));
 		dialog.add(username);
 		dialog.add(new JLabel("Color: "));
-
+		
 		String[] color = {"Red","Orange","Green"};
 		JComboBox colorChoice = new JComboBox(color);
 		dialog.add(colorChoice);
@@ -123,6 +124,10 @@ public class Window extends JFrame implements Runnable {
 				g.drawImage(b.getImage(),b.getPositionx(),b.getPositiony(),null);
 			}
 		}
+		
+		/*if(game.getTank().getBullet().isActive() && Tank.shooted) {
+			g.drawImage(game.getTank().getBullet().getImage(), game.getTank().getBullet().getPositionx(), game.getTank().getBullet().getPositiony(), null);
+		}*/
 	}
 
 	public synchronized void start() {
