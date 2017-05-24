@@ -16,8 +16,12 @@ import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+
+import server.GameClient;
+import server.GameServer;
 
 public class Window extends JFrame implements Runnable {
 
@@ -38,6 +42,9 @@ public class Window extends JFrame implements Runnable {
 
 	private Game game;
 	private InputHandler inputHandler;
+	
+	private GameClient gameClientSocket;
+	private GameServer gameServerSocket;
 
 	public Window(){
 		super(NAME);
@@ -134,6 +141,16 @@ public class Window extends JFrame implements Runnable {
 		running = true;
 		game.start();
 		new Thread(this).start();
+		
+		if (JOptionPane.showConfirmDialog(this, "You wanna run server?") == 0) {
+			gameServerSocket = new GameServer(game);
+			gameServerSocket.start();
+		}
+
+		gameClientSocket = new GameClient(game, "localhost");
+		
+		gameClientSocket.start();
+		gameClientSocket.sendData("ping".getBytes());
 	}
 
 	public synchronized void stop() {
