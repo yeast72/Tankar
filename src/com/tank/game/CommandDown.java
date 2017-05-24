@@ -10,8 +10,8 @@ public class CommandDown implements Command {
 
 	@Override
 	public int execute() {
-		position += 1;
-		if(position > Window.height-Tank.image.getHeight()) position = Window.height-Tank.image.getHeight();
+		position += Tank.velocity;
+		if(position > Window.HEIGHT - TankImage.getHeight()) position = Window.HEIGHT - TankImage.getHeight();
 		return position;
 	}
 	
