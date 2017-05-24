@@ -4,10 +4,12 @@ public class Game {
 
 	private static Game instance = null;
 	private Tank tank;
+	private Tank enemy;
 	private long startTime;
 
 	private Game() {
-		tank = new Tank();
+		tank = new Tank(Window.BORDER, Window.BORDER);
+		enemy = new Tank(100, 100);
 	}
 
 	public static Game getInstance() {
@@ -40,6 +42,10 @@ public class Game {
 			return true;
 		}
 		return false;
+	}
+	
+	public Tank getEnemy() {
+		return enemy;
 	}
 
 }

@@ -20,6 +20,7 @@ public class Tank {
 	private int direction;
 	private long startReloadingTime;
 	private boolean reloadingState;
+	private boolean isDie;
 
 	public static int velocity;
 
@@ -30,11 +31,12 @@ public class Tank {
 	public static int NORMAL_VELOCITY = 2;
 	public static int REDUCED_VELOCITY = 1;
 
-	public Tank() {
-		xPosition = Window.BORDER;
-		yPosition = Window.BORDER;
+	public Tank(int x, int y) {
+		xPosition = x;
+		yPosition = y;
 		direction = WEST;
 		velocity = NORMAL_VELOCITY;
+		isDie = false;
 		try {
 			URL tankURL = ClassLoader.getSystemResource("images/tank.png");
 			image = ImageIO.read(tankURL);
@@ -164,21 +166,24 @@ public class Tank {
 			nonActiveBullets.add(bullet);
 			activeBullets.remove(bullet);
 
-			bullet.setFiredAt(System.currentTimeMillis());
 			bullet.setDirection(direction);
-			if(direction == EAST) {
-				bullet.setPositionx(xPosition + image.getWidth());
-				bullet.setPositiony(yPosition - 5 + image.getHeight()/2 );
-			} else if(direction == WEST) {
-				bullet.setPositionx(xPosition - bullet.getImage().getWidth());
-				bullet.setPositiony(yPosition - 5 + image.getHeight()/2 );
-			} else if(direction == NORTH) {
-				bullet.setPositionx(xPosition - 5 + image.getWidth()/2);
-				bullet.setPositiony(yPosition - bullet.getImage().getHeight());
-			} else if(direction == SOUTH) {
-				bullet.setPositionx(xPosition - 5 + image.getWidth() / 2);
-				bullet.setPositiony(yPosition + image.getHeight());
-			}
+			changeBulletDirection(bullet);
+		}
+	}
+	
+	public void changeBulletDirection(Bullet bullet) {
+		if(direction == EAST) {
+			bullet.setPositionx(xPosition + image.getWidth());
+			bullet.setPositiony(yPosition - 5 + image.getHeight()/2 );
+		} else if(direction == WEST) {
+			bullet.setPositionx(xPosition - bullet.getImage().getWidth());
+			bullet.setPositiony(yPosition - 5 + image.getHeight()/2 );
+		} else if(direction == NORTH) {
+			bullet.setPositionx(xPosition - 5 + image.getWidth()/2);
+			bullet.setPositiony(yPosition - bullet.getImage().getHeight());
+		} else if(direction == SOUTH) {
+			bullet.setPositionx(xPosition - 5 + image.getWidth() / 2);
+			bullet.setPositiony(yPosition + image.getHeight());
 		}
 	}
 
@@ -187,7 +192,6 @@ public class Tank {
 			startReloadingTime = System.currentTimeMillis();
 			reloadingState = true;
 			setVelocity(REDUCED_VELOCITY);
-			System.out.println(startReloadingTime);
 		}
 	}
 
@@ -206,6 +210,21 @@ public class Tank {
 			} 
 		}
 		return false;
+	}
+	
+	public boolean checkHitEnemy(Tank enemy) {
+		for(Bullet b : nonActiveBullets ) {
+			if(b.hitEnermy(enemy.getPositionx(), enemy.getPositiony()) && b.isShooted()) {
+				enemy.die();
+				System.out.println("Enemy dies");
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public void die() {
+		isDie = true;
 	}
 
 }

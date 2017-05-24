@@ -114,6 +114,7 @@ public class Window extends JFrame implements Runnable {
 	private void drawCharacter(Graphics g) {
 		g.setColor(Color.black);
 		g.drawImage(game.getTank().getImage(), game.getTank().getPositionx(), game.getTank().getPositiony(), null);
+		g.drawImage(game.getEnemy().getImage(), 100, 100, null);
 
 		ArrayList<Bullet> nonActiveBullets = game.getTank().getListOfNonActive();
 		for(int i=0; i<nonActiveBullets.size(); i++){
@@ -122,7 +123,6 @@ public class Window extends JFrame implements Runnable {
 				g.drawImage(b.getImage(),b.getPositionx(),b.getPositiony(),null);
 			}
 		}
-
 	}
 
 	public synchronized void start() {
@@ -182,6 +182,7 @@ public class Window extends JFrame implements Runnable {
 	public void tick() {
 		tickCount++;
 		running = game.isDone();
+
 		if(inputHandler.getUp().isPressed()) {
 			game.getTank().moveUp();
 		} else if(inputHandler.getDown().isPressed()) {
@@ -200,11 +201,12 @@ public class Window extends JFrame implements Runnable {
 			game.getTank().reloadBullet();
 		}
 		game.getTank().checkIfRelaodingFinished();
+		game.getTank().checkHitEnemy(game.getEnemy());
 		ArrayList<Bullet> nonActiveBullets = game.getTank().getListOfNonActive();
 		for(int i=0; i<nonActiveBullets.size(); i++){
+			nonActiveBullets.get(i).changeIsHitEnemyStatus(game.getEnemy().getPositionx(), game.getEnemy().getPositiony());
 			nonActiveBullets.get(i).move();
 		}
-
 	}
 
 	/**
