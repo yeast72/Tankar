@@ -62,6 +62,19 @@ public class Game {
 	public List<Player> getAllPlayers(){
 		return this.players;
 	}
+
+	public void removePlayerMP(String username) {
+		int index = 0;
+		for(Player p : players){
+			System.out.println(p.getName());
+			if(p.getName().equals(username)){
+				break;
+			}
+			index++;
+		}
+		this.players.remove(index);
+		System.out.println("amount of player = " + players.size());
+	}
 	
 
 }

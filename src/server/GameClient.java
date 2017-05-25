@@ -11,6 +11,7 @@ import com.tank.game.Game;
 import com.tank.game.PlayerMP;
 
 import packets.Packet;
+import packets.PacketDisconnect;
 import packets.PacketLogin;
 import packets.Packet.PacketTypes;
 
@@ -45,14 +46,13 @@ public class GameClient extends Thread{
 			}
 			
 			this.parsePacket(packet.getData(), packet.getAddress(), packet.getPort());
-//			String message = new String(packet.getData());
-//			System.out.println("SERVER > " + message);
+
 		}
 	}
 	
 	private void parsePacket(byte[] data, InetAddress address, int port) {
 		String message = new String(data).trim();
-		String[] input = message.split(",");
+		String[] input = message.split(" ");
 		System.out.println(message);
 		PacketTypes type = Packet.lookupPacket(input[0]);
 		Packet packet = null;
@@ -69,6 +69,10 @@ public class GameClient extends Thread{
 			game.addPlayer(player);
 			break;
 		case DISCONNECT:
+			packet = new PacketDisconnect(input[1],input[2]);
+			System.out.println("[" + address.getHostAddress() + ":" + port + "] " + ((PacketDisconnect) packet).getUsername()
+					+ " has left this battle field..");
+			game.removePlayerMP(((PacketDisconnect) packet).getUsername());
 			break;
 		}
 	}

@@ -33,26 +33,31 @@ public class Window extends JFrame implements Runnable {
 	public static final int SCALE = 3;
 	public static final int BORDER = 25;
 	public static final String NAME = "Tankar.io";
-
+	
 	private JPanel drawPanel;
 	private JDialog dialog;
-
+	
 	public boolean running;
 	public int tickCount = 0;
 
 	private Game game;
 	private InputHandler inputHandler;
+	public WindowHandler windowHandler;
 	private Player player;
 	
-	private GameClient gameClientSocket;
-	private GameServer gameServerSocket;
-
+	public GameClient gameClientSocket;
+	public GameServer gameServerSocket;
+	
+	public String playerName;
+	public String playerColor;
+	
 	public Window() {
 		super(NAME);
 
 		game = Game.getInstance();
 		inputHandler = new InputHandler(this);
-
+		windowHandler = new WindowHandler(this);
+		
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		this.setVisible(true);
 		this.setResizable(false);
@@ -97,8 +102,10 @@ public class Window extends JFrame implements Runnable {
 			public void actionPerformed(ActionEvent e) {
 //				game.createNewPlayer(username.getText(), colorChoice.getSelectedItem().toString());
 //				game.addPlayer(new Player(username.getText(),colorChoice.getSelectedItem().toString()));
+				playerName = username.getText();
+				playerColor = colorChoice.getSelectedItem().toString();
 				
-				player = new PlayerMP(username.getText(),colorChoice.getSelectedItem().toString(),gameClientSocket.getIPAddress(),1);
+				player = new PlayerMP(playerName , playerColor , gameClientSocket.getIPAddress(),1);
 				game.addPlayer(player);
 				PacketLogin loginPacket = new PacketLogin(player.getName(),player.getColor());
 				
@@ -200,7 +207,7 @@ public class Window extends JFrame implements Runnable {
 			}
 		}
 	}
-
+	
 	/**
 	 * update all internal variable, and game logic
 	 */
@@ -209,6 +216,7 @@ public class Window extends JFrame implements Runnable {
 		running = game.isDone();
 		/* This part will maintain with only one player */
 		List<Player> p1 = game.getAllPlayers();
+		
 		if (p1.size() > 1) {
 			Player p = p1.get(0);
 			if (inputHandler.getUp().isPressed()) {

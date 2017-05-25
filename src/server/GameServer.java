@@ -14,6 +14,7 @@ import com.tank.game.PlayerMP;
 
 import packets.Packet;
 import packets.Packet.PacketTypes;
+import packets.PacketDisconnect;
 import packets.PacketLogin;
 
 public class GameServer extends Thread {
@@ -55,7 +56,7 @@ public class GameServer extends Thread {
 
 	private void parsePacket(byte[] data, InetAddress address, int port) {
 		String message = new String(data).trim();
-		String[] input = message.split(",");
+		String[] input = message.split(" ");
 		PacketTypes type = Packet.lookupPacket(input[0]);
 		Packet packet = null;
 		switch (type) {
@@ -71,8 +72,37 @@ public class GameServer extends Thread {
 			this.addConnection(player, (PacketLogin) packet);
 			break;
 		case DISCONNECT:
+			packet = new PacketDisconnect(input[1],input[2]);
+			System.out.println("[" + address.getHostAddress() + ":" + port + "] " + ((PacketDisconnect) packet).getUsername()
+					+ " has disconnect..");
+			this.removeConnection((PacketDisconnect) packet);
 			break;
 		}
+	}
+
+	private void removeConnection(PacketDisconnect packet) {
+		this.connectedPlayers.remove(getPlayerIndex(packet.getUsername()));
+		packet.writeData(this);
+		
+	}
+	
+	public PlayerMP getPlayerMP(String username){
+		for(PlayerMP player:this.connectedPlayers){
+			if(player.getName().equals(username)){
+				return player;
+			}
+		}
+		return null;
+	}
+	public int getPlayerIndex(String username){
+		int index = 0;
+		for(PlayerMP p : connectedPlayers){
+			if(p.getName().equals(username)){
+				break;
+			}
+				index++;
+			}
+		return index;
 	}
 
 	public void addConnection(PlayerMP player, PacketLogin packet) {
@@ -96,7 +126,6 @@ public class GameServer extends Thread {
 		}
 		if (!alredyConnected) {
 			this.connectedPlayers.add(player);
-			System.out.println("size connected player "+connectedPlayers.size());
 		}
 
 	}
