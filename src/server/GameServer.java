@@ -16,6 +16,7 @@ import packets.Packet;
 import packets.Packet.PacketTypes;
 import packets.PacketDisconnect;
 import packets.PacketLogin;
+import packets.PacketMove;
 
 public class GameServer extends Thread {
 	private DatagramSocket socket;
@@ -63,45 +64,64 @@ public class GameServer extends Thread {
 		case INVALID:
 			break;
 		case LOGIN:
-			packet = new PacketLogin(input[1], input[2]);
+			packet = new PacketLogin(data);
 			System.out.println("[" + address.getHostAddress() + ":" + port + "] " + ((PacketLogin) packet).getUsername()
 					+ " has connected..");
-			
+
 			PlayerMP player = new PlayerMP(((PacketLogin) packet).getUsername(), ((PacketLogin) packet).getColor(),
 					address, port);
 			this.addConnection(player, (PacketLogin) packet);
 			break;
 		case DISCONNECT:
-			packet = new PacketDisconnect(input[1],input[2]);
-			System.out.println("[" + address.getHostAddress() + ":" + port + "] " + ((PacketDisconnect) packet).getUsername()
-					+ " has disconnect..");
+			packet = new PacketDisconnect(data);
+			System.out.println("[" + address.getHostAddress() + ":" + port + "] "
+					+ ((PacketDisconnect) packet).getUsername() + " has disconnect..");
 			this.removeConnection((PacketDisconnect) packet);
 			break;
+		case MOVE:
+			packet = new PacketMove(data);
+			System.out.println(((PacketMove) packet).getUsername() + " has moved to " + ((PacketMove) packet).getX()
+					+ "," + ((PacketMove) packet).getY());
+			this.handleMove(((PacketMove) packet));
+			break;
 		}
+	}
+
+	private void handleMove(PacketMove packetMove) {
+		if(getPlayerMP(packetMove.getUsername()) != null){
+			int index = getPlayerIndex(packetMove.getUsername());
+			int tankPosX = packetMove.getX();
+			int tankPosY = packetMove.getY();
+			this.connectedPlayers.get(index).getTank().setPositionX(tankPosX);
+			this.connectedPlayers.get(index).getTank().setPositionY(tankPosY);
+			packetMove.writeData(this);
+		}
+		
 	}
 
 	private void removeConnection(PacketDisconnect packet) {
 		this.connectedPlayers.remove(getPlayerIndex(packet.getUsername()));
 		packet.writeData(this);
-		
+
 	}
-	
-	public PlayerMP getPlayerMP(String username){
-		for(PlayerMP player:this.connectedPlayers){
-			if(player.getName().equals(username)){
+
+	public PlayerMP getPlayerMP(String username) {
+		for (PlayerMP player : this.connectedPlayers) {
+			if (player.getName().equals(username)) {
 				return player;
 			}
 		}
 		return null;
 	}
-	public int getPlayerIndex(String username){
+
+	public int getPlayerIndex(String username) {
 		int index = 0;
-		for(PlayerMP p : connectedPlayers){
-			if(p.getName().equals(username)){
+		for (PlayerMP p : connectedPlayers) {
+			if (p.getName().equals(username)) {
 				break;
 			}
-				index++;
-			}
+			index++;
+		}
 		return index;
 	}
 

@@ -1,24 +1,28 @@
 package packets;
 
-import java.net.URL;
-
 import server.GameClient;
 import server.GameServer;
 
-public class PacketLogin extends Packet{
+public class PacketMove extends Packet{
 
 	private String username;
 	private String color;
-	public PacketLogin(byte[] data){
-		super(00);
+	private int x,y;
+	
+	public PacketMove(byte[] data){
+		super(02);
 		String[] dataArray = readData(data).split(" ");
 		this.username = dataArray[1];
 		this.color = dataArray[2];
+		this.x = Integer.parseInt(dataArray[3]);
+		this.y = Integer.parseInt(dataArray[4]);
 	}
-	public PacketLogin(String username,String color){
-		super(00);
+	public PacketMove(String username,String color,int x,int y){
+		super(02);
 		this.username = username;
 		this.color = color;
+		this.x = x;
+		this.y = y;
 	}
 	@Override
 	public void writeData(GameClient client) {
@@ -32,7 +36,7 @@ public class PacketLogin extends Packet{
 	}
 	@Override
 	public byte[] getData() {
-		return ("00" +" " + this.username +" " + this.color).getBytes();
+		return ("02" +" " + this.username +" " + this.color + " " + this.x + " " + this.y).getBytes();
 	}
 	
 	public String getUsername(){
@@ -40,5 +44,12 @@ public class PacketLogin extends Packet{
 	}
 	public String getColor(){
 		return color;
+	}
+	
+	public int getX(){
+		return this.x;
+	}
+	public int getY(){
+		return this.y;
 	}
 }

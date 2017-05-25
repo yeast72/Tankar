@@ -13,6 +13,7 @@ import com.tank.game.PlayerMP;
 import packets.Packet;
 import packets.PacketDisconnect;
 import packets.PacketLogin;
+import packets.PacketMove;
 import packets.Packet.PacketTypes;
 
 
@@ -60,7 +61,7 @@ public class GameClient extends Thread{
 		case INVALID:
 			break;
 		case LOGIN:
-			packet = new PacketLogin(input[1], input[2]);
+			packet = new PacketLogin(data);
 			System.out.println("[" + address.getHostAddress() + ":" + port + "] " + ((PacketLogin) packet).getUsername()
 					+ " has joined the game..");
 			
@@ -69,14 +70,23 @@ public class GameClient extends Thread{
 			game.addPlayer(player);
 			break;
 		case DISCONNECT:
-			packet = new PacketDisconnect(input[1],input[2]);
+			packet = new PacketDisconnect(data);
 			System.out.println("[" + address.getHostAddress() + ":" + port + "] " + ((PacketDisconnect) packet).getUsername()
 					+ " has left this battle field..");
 			game.removePlayerMP(((PacketDisconnect) packet).getUsername());
 			break;
+		case MOVE:
+			packet = new PacketMove(input[1],input[2],Integer.parseInt(input[3]),Integer.parseInt(input[4]));
+			handlePacket(((PacketMove) packet));
+			break;
 		}
 	}
 	
+	private void handlePacket(PacketMove packetMove) {
+		this.game.movePlayer(packetMove.getUsername(), packetMove.getX(), packetMove.getY());
+		
+	}
+
 	public void sendData(byte[] data){
 		DatagramPacket packet = new DatagramPacket(data, data.length, ipAddress, 1331);
 		try {

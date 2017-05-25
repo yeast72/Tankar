@@ -23,6 +23,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import packets.PacketLogin;
+import packets.PacketMove;
 import server.GameClient;
 import server.GameServer;
 
@@ -219,6 +220,9 @@ public class Window extends JFrame implements Runnable {
 		
 		if (p1.size() > 1) {
 			Player p = p1.get(0);
+			PacketMove packet = new PacketMove(p.getName(),p.getColor(),p.getTank().getPositionX(),p.getTank().getPositionY());
+			packet.writeData(gameClientSocket);
+			
 			if (inputHandler.getUp().isPressed()) {
 				p.getTank().moveUp();
 			} else if (inputHandler.getDown().isPressed()) {

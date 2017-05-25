@@ -66,7 +66,6 @@ public class Game {
 	public void removePlayerMP(String username) {
 		int index = 0;
 		for(Player p : players){
-			System.out.println(p.getName());
 			if(p.getName().equals(username)){
 				break;
 			}
@@ -75,6 +74,20 @@ public class Game {
 		this.players.remove(index);
 		System.out.println("amount of player = " + players.size());
 	}
-	
+	private int getPlayerMPIndex(String username){
+		int index = 0;
+		for(Player p : players){
+			if(p.getName().equals(username)){
+				break;
+			}
+			index++;
+		}
+		return index;
+	}
+	public void movePlayer(String username,int x,int y){
+		int index = getPlayerMPIndex(username);
+		this.players.get(index).getTank().setPositionX(x);
+		this.players.get(index).getTank().setPositionY(y);
+	}
 
 }
