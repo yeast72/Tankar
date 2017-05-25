@@ -56,7 +56,7 @@ public class Game {
 	
 	public void createNewPlayer(String name, String txtColor){ 
 		players.add(new Player(name, txtColor));
-		players.add(new Player("Eoop", "Green")); // create 1 enemy for checking hitting function
+//		players.add(new Player("Eoop", "Green")); // create 1 enemy for checking hitting function
 	}
 	
 	public List<Player> getAllPlayers(){

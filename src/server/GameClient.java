@@ -43,6 +43,7 @@ public class GameClient extends Thread{
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+			
 			this.parsePacket(packet.getData(), packet.getAddress(), packet.getPort());
 //			String message = new String(packet.getData());
 //			System.out.println("SERVER > " + message);
@@ -62,6 +63,7 @@ public class GameClient extends Thread{
 			packet = new PacketLogin(input[1], input[2]);
 			System.out.println("[" + address.getHostAddress() + ":" + port + "] " + ((PacketLogin) packet).getUsername()
 					+ " has joined the game..");
+			
 			PlayerMP player = new PlayerMP(((PacketLogin) packet).getUsername(), ((PacketLogin) packet).getColor(),
 					address, port);
 			game.addPlayer(player);
@@ -78,5 +80,8 @@ public class GameClient extends Thread{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	public InetAddress getIPAddress(){
+		return this.ipAddress;
 	}
 }

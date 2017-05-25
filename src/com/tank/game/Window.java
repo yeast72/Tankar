@@ -95,14 +95,18 @@ public class Window extends JFrame implements Runnable {
 		submit.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				//game.createNewPlayer(username.getText(), colorChoice.getSelectedItem().toString());
-				//game.addPlayer(new Player(username.getText(),colorChoice.getSelectedItem().toString()));
-				player = new PlayerMP(username.getText(),colorChoice.getSelectedItem().toString(),null,-1);
+//				game.createNewPlayer(username.getText(), colorChoice.getSelectedItem().toString());
+//				game.addPlayer(new Player(username.getText(),colorChoice.getSelectedItem().toString()));
+				
+				player = new PlayerMP(username.getText(),colorChoice.getSelectedItem().toString(),gameClientSocket.getIPAddress(),1);
+				game.addPlayer(player);
 				PacketLogin loginPacket = new PacketLogin(player.getName(),player.getColor());
+				
 				if(gameServerSocket != null){
 					gameServerSocket.addConnection((PlayerMP)player, loginPacket);
 				}
 				loginPacket.writeData(gameClientSocket);
+				
 				dialog.setVisible(false);
 			}
 		});
@@ -151,7 +155,6 @@ public class Window extends JFrame implements Runnable {
 		gameClientSocket = new GameClient(game, "localhost");
 		
 		gameClientSocket.start();
-		gameClientSocket.sendData("ping".getBytes());
 	}
 
 	public synchronized void stop() {

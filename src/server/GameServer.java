@@ -65,6 +65,7 @@ public class GameServer extends Thread {
 			packet = new PacketLogin(input[1], input[2]);
 			System.out.println("[" + address.getHostAddress() + ":" + port + "] " + ((PacketLogin) packet).getUsername()
 					+ " has connected..");
+			
 			PlayerMP player = new PlayerMP(((PacketLogin) packet).getUsername(), ((PacketLogin) packet).getColor(),
 					address, port);
 			this.addConnection(player, (PacketLogin) packet);
@@ -79,24 +80,23 @@ public class GameServer extends Thread {
 		for (PlayerMP p : this.connectedPlayers) {
 			if (player.getName().equalsIgnoreCase(p.getName())) {
 				if (p.ipAddress == null) {
+					System.out.println("checked");
 					p.ipAddress = player.ipAddress;
 				}
-				if (p.port == -1) {
+				if (p.port == 1) {
 					p.port = player.port;
 				}
 				alredyConnected = true;
-				
-			}
-			else{
-				sendData(packet.getData(),p.ipAddress,p.port);
-				
-				packet = new PacketLogin(p.getName(),p.getColor());
-				sendData(packet.getData(),player.ipAddress,player.port);
+			} else {
+				sendData(packet.getData(), p.ipAddress, p.port);
+
+				packet = new PacketLogin(p.getName(), p.getColor());
+				sendData(packet.getData(), player.ipAddress, player.port);
 			}
 		}
 		if (!alredyConnected) {
 			this.connectedPlayers.add(player);
-			packet.writeData(this);
+			System.out.println("size connected player "+connectedPlayers.size());
 		}
 
 	}
