@@ -22,6 +22,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import packets.PacketLogin;
 import server.GameClient;
 import server.GameServer;
 
@@ -93,7 +94,10 @@ public class Window extends JFrame implements Runnable {
 		submit.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				game.createNewPlayer(username.getText(), colorChoice.getSelectedItem().toString());
+				//game.createNewPlayer(username.getText(), colorChoice.getSelectedItem().toString());
+				PacketLogin loginPacket = new PacketLogin(username.getText(),colorChoice.getSelectedItem().toString());
+				//game.addPlayer(new Player(username.getText(),colorChoice.getSelectedItem().toString()));
+				loginPacket.writeData(gameClientSocket);
 				dialog.setVisible(false);
 			}
 		});

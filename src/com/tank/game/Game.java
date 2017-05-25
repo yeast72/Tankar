@@ -50,6 +50,9 @@ public class Game {
 	public Player getEnemy(){
 		return players.get(1);
 	}
+	public void addPlayer(Player player){
+		players.add(new Player(player.getName(),player.getColor()));
+	}
 	
 	public void createNewPlayer(String name, String txtColor){ 
 		players.add(new Player(name, txtColor));
