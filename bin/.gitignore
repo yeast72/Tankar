@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 /com/
 =======
 <<<<<<< HEAD
@@ -9,3 +10,9 @@
 /images/
 >>>>>>> 7c02bd7ffe8b7d833c9c548a1e2869a665f93038
 >>>>>>> b78009f3f81a43592e786924813dc9a870eb07d6
+=======
+/.DS_Store
+/com/
+/images/
+/server/
+>>>>>>> server
