@@ -11,9 +11,10 @@ import com.tank.game.Game;
 import com.tank.game.PlayerMP;
 
 import packets.Packet;
-import packets.PacketDisconnect;
-import packets.PacketLogin;
-import packets.PacketMove;
+import packets.Packet01Disconnect;
+import packets.Packet00Login;
+import packets.Packet02Move;
+import packets.Packet03Shoot;
 import packets.Packet.PacketTypes;
 
 
@@ -54,34 +55,42 @@ public class GameClient extends Thread{
 	private void parsePacket(byte[] data, InetAddress address, int port) {
 		String message = new String(data).trim();
 		String[] input = message.split(" ");
-		System.out.println(message);
 		PacketTypes type = Packet.lookupPacket(input[0]);
 		Packet packet = null;
 		switch (type) {
 		case INVALID:
 			break;
 		case LOGIN:
-			packet = new PacketLogin(data);
-			handleLogin((PacketLogin)packet,address,port);
+			packet = new Packet00Login(data);
+			handleLogin((Packet00Login)packet,address,port);
 			break;
 		case DISCONNECT:
-			packet = new PacketDisconnect(data);
-			System.out.println("[" + address.getHostAddress() + ":" + port + "] " + ((PacketDisconnect) packet).getUsername()
+			packet = new Packet01Disconnect(data);
+			System.out.println("[" + address.getHostAddress() + ":" + port + "] " + ((Packet01Disconnect) packet).getUsername()
 					+ " has left this battle field..");
-			game.removePlayerMP(((PacketDisconnect) packet).getUsername());
+			game.removePlayerMP(((Packet01Disconnect) packet).getUsername());
 			break;
 		case MOVE:
-			packet = new PacketMove(data);
-			handlePacket(((PacketMove) packet));
+			packet = new Packet02Move(data);
+			handlePacket(((Packet02Move) packet));
+			break;
+		case SHOOT:
+			packet = new Packet03Shoot(data);
+			handleShoot((Packet03Shoot) packet);
 			break;
 		}
 	}
 	
-	private void handlePacket(PacketMove packetMove) {
+	private void handleShoot(Packet03Shoot packet) {
+		this.game.playerShoot(packet.getUsername());
+		
+	}
+
+	private void handlePacket(Packet02Move packetMove) {
 		this.game.movePlayer(packetMove.getUsername(), packetMove.getX(), packetMove.getY());
 	}
 	
-	private void handleLogin(PacketLogin packetLogin,InetAddress address,int port){
+	private void handleLogin(Packet00Login packetLogin,InetAddress address,int port){
 		
 		System.out.println("[" + address.getHostAddress() + ":" + port + "] " + packetLogin.getUsername()
 				+ " has joined the game..");

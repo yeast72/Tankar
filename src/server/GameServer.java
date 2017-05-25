@@ -14,9 +14,10 @@ import com.tank.game.PlayerMP;
 
 import packets.Packet;
 import packets.Packet.PacketTypes;
-import packets.PacketDisconnect;
-import packets.PacketLogin;
-import packets.PacketMove;
+import packets.Packet01Disconnect;
+import packets.Packet02Move;
+import packets.Packet00Login;
+import packets.Packet03Shoot;
 
 public class GameServer extends Thread {
 	private DatagramSocket socket;
@@ -64,30 +65,42 @@ public class GameServer extends Thread {
 		case INVALID:
 			break;
 		case LOGIN:
-			packet = new PacketLogin(data);
-			System.out.println("[" + address.getHostAddress() + ":" + port + "] " + ((PacketLogin) packet).getUsername()
+			packet = new Packet00Login(data);
+			System.out.println("[" + address.getHostAddress() + ":" + port + "] " + ((Packet00Login) packet).getUsername()
 					+ " has connected..");
 
-			PlayerMP player = new PlayerMP(((PacketLogin) packet).getUsername(), ((PacketLogin) packet).getColor(),
+			PlayerMP player = new PlayerMP(((Packet00Login) packet).getUsername(), ((Packet00Login) packet).getColor(),
 					address, port);
-			this.addConnection(player, (PacketLogin) packet);
+			this.addConnection(player, (Packet00Login) packet);
 			break;
 		case DISCONNECT:
-			packet = new PacketDisconnect(data);
+			packet = new Packet01Disconnect(data);
 			System.out.println("[" + address.getHostAddress() + ":" + port + "] "
-					+ ((PacketDisconnect) packet).getUsername() + " has disconnect..");
-			this.removeConnection((PacketDisconnect) packet);
+					+ ((Packet01Disconnect) packet).getUsername() + " has disconnect..");
+			this.removeConnection((Packet01Disconnect) packet);
 			break;
 		case MOVE:
-			packet = new PacketMove(data);
-			System.out.println(((PacketMove) packet).getUsername() + " has moved to " + ((PacketMove) packet).getX()
-					+ "," + ((PacketMove) packet).getY());
-			this.handleMove(((PacketMove) packet));
+			packet = new Packet02Move(data);
+			this.handleMove(((Packet02Move) packet));
+			break;
+		case SHOOT:
+			packet = new Packet03Shoot(data);
+			System.out.println(((Packet03Shoot) packet).getUsername() +" shoot");
+			this.handleShoot((Packet03Shoot) packet);
 			break;
 		}
 	}
 
-	private void handleMove(PacketMove packetMove) {
+	private void handleShoot(Packet03Shoot packet) {
+		if(getPlayerMP(packet.getUsername()) != null){
+			int index = getPlayerIndex(packet.getUsername());
+			this.connectedPlayers.get(index).getTank().shoot();
+			packet.writeData(this);
+		}
+		
+	}
+
+	private void handleMove(Packet02Move packetMove) {
 		if(getPlayerMP(packetMove.getUsername()) != null){
 			int index = getPlayerIndex(packetMove.getUsername());
 			int tankPosX = packetMove.getX();
@@ -99,7 +112,7 @@ public class GameServer extends Thread {
 		
 	}
 
-	private void removeConnection(PacketDisconnect packet) {
+	private void removeConnection(Packet01Disconnect packet) {
 		this.connectedPlayers.remove(getPlayerIndex(packet.getUsername()));
 		packet.writeData(this);
 
@@ -125,7 +138,7 @@ public class GameServer extends Thread {
 		return index;
 	}
 
-	public void addConnection(PlayerMP player, PacketLogin packet) {
+	public void addConnection(PlayerMP player, Packet00Login packet) {
 		boolean alredyConnected = false;
 		for (PlayerMP p : this.connectedPlayers) {
 			if (player.getName().equalsIgnoreCase(p.getName())) {
@@ -140,7 +153,7 @@ public class GameServer extends Thread {
 			} else {
 				sendData(packet.getData(), p.ipAddress, p.port);
 
-				packet = new PacketLogin(p.getName(), p.getColor(),p.getTank().getPositionX(),p.getTank().getPositionY());
+				packet = new Packet00Login(p.getName(), p.getColor(),p.getTank().getPositionX(),p.getTank().getPositionY());
 				sendData(packet.getData(), player.ipAddress, player.port);
 			}
 		}

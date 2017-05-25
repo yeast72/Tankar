@@ -3,53 +3,46 @@ package packets;
 import server.GameClient;
 import server.GameServer;
 
-public class PacketMove extends Packet{
+public class Packet01Disconnect extends Packet {
 
 	private String username;
 	private String color;
-	private int x,y;
-	
-	public PacketMove(byte[] data){
-		super(02);
+
+	public Packet01Disconnect(byte[] data) {
+		super(01);
 		String[] dataArray = readData(data).split(" ");
 		this.username = dataArray[1];
 		this.color = dataArray[2];
-		this.x = Integer.parseInt(dataArray[3]);
-		this.y = Integer.parseInt(dataArray[4]);
 	}
-	public PacketMove(String username,String color,int x,int y){
-		super(02);
+
+	public Packet01Disconnect(String username, String color) {
+		super(01);
 		this.username = username;
 		this.color = color;
-		this.x = x;
-		this.y = y;
 	}
+
 	@Override
 	public void writeData(GameClient client) {
 		client.sendData(getData());
-		
+
 	}
+
 	@Override
 	public void writeData(GameServer server) {
 		server.sendDataToAllClients(getData());
-		
+
 	}
+
 	@Override
 	public byte[] getData() {
-		return ("02" +" " + this.username +" " + this.color + " " + this.x + " " + this.y).getBytes();
+		return ("01" + " " + this.username + " " + this.color).getBytes();
 	}
-	
-	public String getUsername(){
+
+	public String getUsername() {
 		return username;
 	}
-	public String getColor(){
+
+	public String getColor() {
 		return color;
-	}
-	
-	public int getX(){
-		return this.x;
-	}
-	public int getY(){
-		return this.y;
 	}
 }

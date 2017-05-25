@@ -221,5 +221,6 @@ public class Tank {
 	public void die() {
 		isDie = true;
 	}
+	
 
 }

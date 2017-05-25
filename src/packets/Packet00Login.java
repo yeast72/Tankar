@@ -5,13 +5,13 @@ import java.net.URL;
 import server.GameClient;
 import server.GameServer;
 
-public class PacketLogin extends Packet{
+public class Packet00Login extends Packet{
 
 	private String username;
 	private String color;
 	private int x;
 	private int y;
-	public PacketLogin(byte[] data){
+	public Packet00Login(byte[] data){
 		super(00);
 		String[] dataArray = readData(data).split(" ");
 		this.username = dataArray[1];
@@ -19,7 +19,7 @@ public class PacketLogin extends Packet{
 		this.x = Integer.parseInt(dataArray[3]);
 		this.y = Integer.parseInt(dataArray[4]);
 	}
-	public PacketLogin(String username,String color,int x , int y){
+	public Packet00Login(String username,String color,int x , int y){
 		super(00);
 		this.username = username;
 		this.color = color;

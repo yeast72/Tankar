@@ -22,8 +22,9 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import packets.PacketLogin;
-import packets.PacketMove;
+import packets.Packet00Login;
+import packets.Packet02Move;
+import packets.Packet03Shoot;
 import server.GameClient;
 import server.GameServer;
 
@@ -108,7 +109,7 @@ public class Window extends JFrame implements Runnable {
 				
 				player = new PlayerMP(playerName , playerColor , gameClientSocket.getIPAddress(),1);
 				game.addPlayer(player);
-				PacketLogin loginPacket = new PacketLogin(player.getName(),player.getColor(),player.getTank().getPositionX(),player.getTank().getPositionY());
+				Packet00Login loginPacket = new Packet00Login(player.getName(),player.getColor(),player.getTank().getPositionX(),player.getTank().getPositionY());
 				
 				if(gameServerSocket != null){
 					gameServerSocket.addConnection((PlayerMP)player, loginPacket);
@@ -220,7 +221,7 @@ public class Window extends JFrame implements Runnable {
 		
 		if (p1.size() > 1) {
 			Player p = p1.get(0);
-			PacketMove packet = new PacketMove(p.getName(),p.getColor(),p.getTank().getPositionX(),p.getTank().getPositionY());
+			Packet02Move packet = new Packet02Move(p.getName(),p.getColor(),p.getTank().getPositionX(),p.getTank().getPositionY());
 			packet.writeData(gameClientSocket);
 			
 			if (inputHandler.getUp().isPressed()) {
@@ -235,19 +236,27 @@ public class Window extends JFrame implements Runnable {
 			if (inputHandler.getSpace().isPressed()) {
 				inputHandler.getSpace().toggle(false);
 				p.getTank().shoot();
+				Packet03Shoot packetShoot = new Packet03Shoot(p.getName(),p.getColor());
+				packetShoot.writeData(gameClientSocket);
 			}
 			if (inputHandler.getReload().isPressed() && !p.getTank().isReloading()) {
 				inputHandler.getReload().toggle(false);
 				p.getTank().reloadBullet();
 			}
-			p.getTank().checkIfRelaodingFinished();
-			p.getTank().checkHitEnemy(game.getEnemy().getTank());
-			ArrayList<Bullet> nonActiveBullets = p.getTank().getListOfNonActive();
-			for (int i = 0; i < nonActiveBullets.size(); i++) {
-				nonActiveBullets.get(i).changeIsHitEnemyStatus(game.getEnemy().getTank().getPositionX(),
-						game.getEnemy().getTank().getPositionY());
-				nonActiveBullets.get(i).move();
-			}
+			
+			updateBullet(p);
+			
+		}
+	}
+	
+	public void updateBullet(Player p){
+		p.getTank().checkIfRelaodingFinished();
+		p.getTank().checkHitEnemy(game.getEnemy().getTank());
+		ArrayList<Bullet> nonActiveBullets = p.getTank().getListOfNonActive();
+		for (int i = 0; i < nonActiveBullets.size(); i++) {
+			nonActiveBullets.get(i).changeIsHitEnemyStatus(game.getEnemy().getTank().getPositionX(),
+					game.getEnemy().getTank().getPositionY());
+			nonActiveBullets.get(i).move();
 		}
 	}
 

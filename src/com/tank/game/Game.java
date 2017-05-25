@@ -89,5 +89,9 @@ public class Game {
 		this.players.get(index).getTank().setPositionX(x);
 		this.players.get(index).getTank().setPositionY(y);
 	}
+	public void playerShoot(String username){
+		int index = getPlayerMPIndex(username);
+		this.players.get(index).getTank().shoot();
+	}
 
 }

@@ -3,7 +3,7 @@ package com.tank.game;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
-import packets.PacketDisconnect;
+import packets.Packet01Disconnect;
 
 public class WindowHandler implements WindowListener{
 	
@@ -28,7 +28,7 @@ public class WindowHandler implements WindowListener{
 	@Override
 	public void windowClosing(WindowEvent e) {
 		System.out.println("name window Handler " + this.game.playerName);
-		PacketDisconnect packet = new PacketDisconnect(this.game.playerName, this.game.playerColor);
+		Packet01Disconnect packet = new Packet01Disconnect(this.game.playerName, this.game.playerColor);
 		packet.writeData(game.gameClientSocket);
 		
 	}
