@@ -8,6 +8,11 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 
 import com.tank.game.Game;
+import com.tank.game.PlayerMP;
+
+import packets.Packet;
+import packets.PacketLogin;
+import packets.Packet.PacketTypes;
 
 
 
@@ -38,8 +43,31 @@ public class GameClient extends Thread{
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			String message = new String(packet.getData());
-			System.out.println("SERVER > " + message);
+			this.parsePacket(packet.getData(), packet.getAddress(), packet.getPort());
+//			String message = new String(packet.getData());
+//			System.out.println("SERVER > " + message);
+		}
+	}
+	
+	private void parsePacket(byte[] data, InetAddress address, int port) {
+		String message = new String(data).trim();
+		String[] input = message.split(",");
+		System.out.println(message);
+		PacketTypes type = Packet.lookupPacket(input[0]);
+		Packet packet = null;
+		switch (type) {
+		case INVALID:
+			break;
+		case LOGIN:
+			packet = new PacketLogin(input[1], input[2]);
+			System.out.println("[" + address.getHostAddress() + ":" + port + "] " + ((PacketLogin) packet).getUsername()
+					+ " has joined the game..");
+			PlayerMP player = new PlayerMP(((PacketLogin) packet).getUsername(), ((PacketLogin) packet).getColor(),
+					address, port);
+			game.addPlayer(player);
+			break;
+		case DISCONNECT:
+			break;
 		}
 	}
 	

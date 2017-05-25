@@ -40,7 +40,7 @@ public class GameServer extends Thread {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			parsePacket(packet.getData(), packet.getAddress(), packet.getPort());
+			this.parsePacket(packet.getData(), packet.getAddress(), packet.getPort());
 			// String message = new String(packet.getData());
 			//
 			// if (message.trim().equalsIgnoreCase("ping")) {
@@ -56,24 +56,49 @@ public class GameServer extends Thread {
 	private void parsePacket(byte[] data, InetAddress address, int port) {
 		String message = new String(data).trim();
 		String[] input = message.split(",");
-		System.out.println(message);
 		PacketTypes type = Packet.lookupPacket(input[0]);
+		Packet packet = null;
 		switch (type) {
 		case INVALID:
 			break;
 		case LOGIN:
-			PacketLogin packet = new PacketLogin(input[1],input[2]);
-			System.out.println(
-					"[" + address.getHostAddress() + ":" + port + "] " + packet.getUsername() + " has connected..");
-			PlayerMP player = new PlayerMP(packet.getUsername(), packet.getColor(), address, port);
-			if(player != null) {
-				this.connectedPlayers.add(player);
-				game.addPlayer(player);
-			}
+			packet = new PacketLogin(input[1], input[2]);
+			System.out.println("[" + address.getHostAddress() + ":" + port + "] " + ((PacketLogin) packet).getUsername()
+					+ " has connected..");
+			PlayerMP player = new PlayerMP(((PacketLogin) packet).getUsername(), ((PacketLogin) packet).getColor(),
+					address, port);
+			this.addConnection(player, (PacketLogin) packet);
 			break;
 		case DISCONNECT:
 			break;
 		}
+	}
+
+	public void addConnection(PlayerMP player, PacketLogin packet) {
+		boolean alredyConnected = false;
+		for (PlayerMP p : this.connectedPlayers) {
+			if (player.getName().equalsIgnoreCase(p.getName())) {
+				if (p.ipAddress == null) {
+					p.ipAddress = player.ipAddress;
+				}
+				if (p.port == -1) {
+					p.port = player.port;
+				}
+				alredyConnected = true;
+				
+			}
+			else{
+				sendData(packet.getData(),p.ipAddress,p.port);
+				
+				packet = new PacketLogin(p.getName(),p.getColor());
+				sendData(packet.getData(),player.ipAddress,player.port);
+			}
+		}
+		if (!alredyConnected) {
+			this.connectedPlayers.add(player);
+			packet.writeData(this);
+		}
+
 	}
 
 	public void sendData(byte[] data, InetAddress ipAddress, int port) {

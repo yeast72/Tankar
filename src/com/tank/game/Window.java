@@ -42,6 +42,7 @@ public class Window extends JFrame implements Runnable {
 
 	private Game game;
 	private InputHandler inputHandler;
+	private Player player;
 	
 	private GameClient gameClientSocket;
 	private GameServer gameServerSocket;
@@ -95,8 +96,12 @@ public class Window extends JFrame implements Runnable {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				//game.createNewPlayer(username.getText(), colorChoice.getSelectedItem().toString());
-				PacketLogin loginPacket = new PacketLogin(username.getText(),colorChoice.getSelectedItem().toString());
 				//game.addPlayer(new Player(username.getText(),colorChoice.getSelectedItem().toString()));
+				player = new PlayerMP(username.getText(),colorChoice.getSelectedItem().toString(),null,-1);
+				PacketLogin loginPacket = new PacketLogin(player.getName(),player.getColor());
+				if(gameServerSocket != null){
+					gameServerSocket.addConnection((PlayerMP)player, loginPacket);
+				}
 				loginPacket.writeData(gameClientSocket);
 				dialog.setVisible(false);
 			}
