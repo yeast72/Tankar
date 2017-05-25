@@ -108,7 +108,7 @@ public class Window extends JFrame implements Runnable {
 				
 				player = new PlayerMP(playerName , playerColor , gameClientSocket.getIPAddress(),1);
 				game.addPlayer(player);
-				PacketLogin loginPacket = new PacketLogin(player.getName(),player.getColor());
+				PacketLogin loginPacket = new PacketLogin(player.getName(),player.getColor(),player.getTank().getPositionX(),player.getTank().getPositionY());
 				
 				if(gameServerSocket != null){
 					gameServerSocket.addConnection((PlayerMP)player, loginPacket);

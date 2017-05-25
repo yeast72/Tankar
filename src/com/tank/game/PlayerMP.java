@@ -11,6 +11,13 @@ public class PlayerMP extends Player{
 		this.ipAddress = ipAddress;
 		this.port = port;
 	}
+	public PlayerMP(String name,String color, int x,int y,InetAddress ipAddress,int port){
+		super(name,color);
+		this.ipAddress = ipAddress;
+		this.port = port;
+		getTank().setPositionX(x);
+		getTank().setPositionY(y);
+	}
 	
 
 }

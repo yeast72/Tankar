@@ -140,7 +140,7 @@ public class GameServer extends Thread {
 			} else {
 				sendData(packet.getData(), p.ipAddress, p.port);
 
-				packet = new PacketLogin(p.getName(), p.getColor());
+				packet = new PacketLogin(p.getName(), p.getColor(),p.getTank().getPositionX(),p.getTank().getPositionY());
 				sendData(packet.getData(), player.ipAddress, player.port);
 			}
 		}
