@@ -48,23 +48,12 @@ public class Game {
 	
 	/* This part will maintain with 1 player and 1 enemy*/
 	public Player getEnemy(){
-			return players.get(1);
+		return players.get(1);
 	}
 	
-	public void createNewPlayer(String name, String txtColor){
-		System.out.println(txtColor);
-		Color color;
-		try {
-			Field field = Class.forName("java.awt.Color").getField(txtColor);
-			color = (Color) field.get(null);
-		  
-		} catch (Exception e) {
-			color = Color.GRAY;
-		}
-		 System.out.println(color.toString()+"jiii");
-		 
-		players.add(new Player(name, Color.BLACK));
-		players.add(new Player("E", Color.RED));
+	public void createNewPlayer(String name, String txtColor){ 
+		players.add(new Player(name, txtColor));
+		players.add(new Player("Eoop", "Green")); // create 1 enemy for checking hitting function
 	}
 	
 	public List<Player> getAllPlayers(){

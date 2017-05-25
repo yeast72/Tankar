@@ -23,7 +23,6 @@ import javax.swing.JTextField;
 
 public class Window extends JFrame implements Runnable {
 
-	
 	public static final int WIDTH = 1080;
 	public static final int HEIGHT = 720;
 	public static final int SCALE = 3;
@@ -39,9 +38,8 @@ public class Window extends JFrame implements Runnable {
 	private Game game;
 	private InputHandler inputHandler;
 
-	public Window(){
+	public Window() {
 		super(NAME);
-
 
 		game = Game.getInstance();
 		inputHandler = new InputHandler(this);
@@ -57,7 +55,7 @@ public class Window extends JFrame implements Runnable {
 		createDialog();
 		drawPanel = new JPanel() {
 			{
-				setPreferredSize(new Dimension(Window.WIDTH , Window.HEIGHT));
+				setPreferredSize(new Dimension(Window.WIDTH, Window.HEIGHT));
 			}
 
 			@Override
@@ -70,8 +68,8 @@ public class Window extends JFrame implements Runnable {
 		};
 		add(drawPanel);
 	}
-	
-	private void createDialog(){
+
+	private void createDialog() {
 		JTextField username = new JTextField(10);
 		dialog = new JDialog();
 		dialog.setSize(new Dimension(500, 80));
@@ -80,23 +78,23 @@ public class Window extends JFrame implements Runnable {
 		dialog.add(new JLabel("Username: "));
 		dialog.add(username);
 		dialog.add(new JLabel("Color: "));
-		
-		String[] color = {"RED","ORANGE","GREEN", "GRAY", "BLUE"};
+
+		String[] color = { "Red", "Orange", "Green", "Gray", "Pink","Blue" };
 		JComboBox colorChoice = new JComboBox(color);
 		dialog.add(colorChoice);
 		JButton submit = new JButton("Submit");
 		submit.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				game.createNewPlayer(username.getText(),colorChoice.getSelectedItem().toString());
+				game.createNewPlayer(username.getText(), colorChoice.getSelectedItem().toString());
 				dialog.setVisible(false);
-
-			}});
+			}
+		});
 		dialog.add(submit);
 		dialog.setVisible(true);
 	}
-	
-	private void drawBackground(Graphics g){
+
+	private void drawBackground(Graphics g) {
 		URL bgURL = ClassLoader.getSystemResource("images/bg.png");
 		Image image = null;
 		try {
@@ -109,18 +107,19 @@ public class Window extends JFrame implements Runnable {
 
 	private void drawCharacter(Graphics g) {
 		g.setColor(Color.black);
-		List<Player> allPlayer = game.getAllPlayers(); 
-		if(!allPlayer.isEmpty()){
-		for(Player p : allPlayer){
-			g.drawImage(p.getTank().getImage(), p.getTank().getPositionX(), p.getTank().getPositionY(), null);
-			ArrayList<Bullet> nonActiveBullets = p.getTank().getListOfNonActive();
-			for(int i=0; i<nonActiveBullets.size(); i++){
-				Bullet b = nonActiveBullets.get(i);
-				if(b.isShooted()) {
-					g.drawImage(b.getImage(),b.getPositionx(),b.getPositiony(),null);
+		List<Player> allPlayer = game.getAllPlayers();
+		if (!allPlayer.isEmpty()) {
+			for (Player p : allPlayer) {
+				g.drawImage(p.getTank().getImage().getImage(), p.getTank().getPositionX(), p.getTank().getPositionY(), null);
+				ArrayList<Bullet> nonActiveBullets = p.getTank().getListOfNonActive();
+				for (int i = 0; i < nonActiveBullets.size(); i++) {
+					Bullet b = nonActiveBullets.get(i);
+					if (b.isShooted()) {
+						g.drawImage(b.getImage(), b.getPositionx(), b.getPositiony(), null);
+					}
 				}
 			}
-		}		}
+		}
 	}
 
 	public synchronized void start() {
@@ -135,23 +134,23 @@ public class Window extends JFrame implements Runnable {
 
 	public void run() {
 		long lastTime = System.nanoTime();
-		double nsPerTick = 1000000000D/60D;
+		double nsPerTick = 1000000000D / 60D;
 
 		int ticks = 0;
 		int frames = 0;
 
 		long lastTimer = System.currentTimeMillis();
 		double delta = 0;
-		while(running) {
+		while (running) {
 			long now = System.nanoTime();
 			delta += (now - lastTime) / nsPerTick;
 			lastTime = now;
 			boolean shouldRender = true;
-			while(delta >= 1) {
+			while (delta >= 1) {
 				ticks++;
 				tick();
 				delta -= 1;
-				//				shouldRender = true;
+				// shouldRender = true;
 			}
 
 			try {
@@ -160,12 +159,12 @@ public class Window extends JFrame implements Runnable {
 				e.printStackTrace();
 			}
 
-			if(shouldRender) {
+			if (shouldRender) {
 				frames++;
 				render();
 			}
 
-			if(System.currentTimeMillis() - lastTimer >= 1000) {
+			if (System.currentTimeMillis() - lastTimer >= 1000) {
 				lastTimer += 1000;
 				frames = 0;
 				ticks = 0;
@@ -179,35 +178,35 @@ public class Window extends JFrame implements Runnable {
 	public void tick() {
 		tickCount++;
 		running = game.isDone();
-		/* This part will maintain with only one player*/
+		/* This part will maintain with only one player */
 		List<Player> p1 = game.getAllPlayers();
-		if(p1.size()>1){
-		Player p = p1.get(0);
-		
-		if(inputHandler.getUp().isPressed()) {
-			p.getTank().moveUp();
-		} else if(inputHandler.getDown().isPressed()) {
-			p.getTank().moveDown();
-		} else if(inputHandler.getLeft().isPressed()) {
-			p.getTank().moveLeft();
-		} else if(inputHandler.getRight().isPressed()) {
-			p.getTank().moveRight();
-		} 
-		if(inputHandler.getSpace().isPressed()) {
-			inputHandler.getSpace().toggle(false);
-			p.getTank().shoot();
-		}
-		if(inputHandler.getReload().isPressed() && !p.getTank().isReloading()) {
-			inputHandler.getReload().toggle(false);
-			p.getTank().reloadBullet();
-		}
-		p.getTank().checkIfRelaodingFinished();
-		p.getTank().checkHitEnemy(game.getEnemy().getTank());
-		ArrayList<Bullet> nonActiveBullets = p.getTank().getListOfNonActive();
-		for(int i=0; i<nonActiveBullets.size(); i++){
-			nonActiveBullets.get(i).changeIsHitEnemyStatus(game.getEnemy().getTank().getPositionX(), game.getEnemy().getTank().getPositionY());
-			nonActiveBullets.get(i).move();
-		}
+		if (p1.size() > 1) {
+			Player p = p1.get(0);
+			if (inputHandler.getUp().isPressed()) {
+				p.getTank().moveUp();
+			} else if (inputHandler.getDown().isPressed()) {
+				p.getTank().moveDown();
+			} else if (inputHandler.getLeft().isPressed()) {
+				p.getTank().moveLeft();
+			} else if (inputHandler.getRight().isPressed()) {
+				p.getTank().moveRight();
+			}
+			if (inputHandler.getSpace().isPressed()) {
+				inputHandler.getSpace().toggle(false);
+				p.getTank().shoot();
+			}
+			if (inputHandler.getReload().isPressed() && !p.getTank().isReloading()) {
+				inputHandler.getReload().toggle(false);
+				p.getTank().reloadBullet();
+			}
+			p.getTank().checkIfRelaodingFinished();
+			p.getTank().checkHitEnemy(game.getEnemy().getTank());
+			ArrayList<Bullet> nonActiveBullets = p.getTank().getListOfNonActive();
+			for (int i = 0; i < nonActiveBullets.size(); i++) {
+				nonActiveBullets.get(i).changeIsHitEnemyStatus(game.getEnemy().getTank().getPositionX(),
+						game.getEnemy().getTank().getPositionY());
+				nonActiveBullets.get(i).move();
+			}
 		}
 	}
 
@@ -218,10 +217,9 @@ public class Window extends JFrame implements Runnable {
 		repaint();
 	}
 
-	public static void main(String [] args){
+	public static void main(String[] args) {
 		Window g = new Window();
 		g.start();
 	}
-
 
 }

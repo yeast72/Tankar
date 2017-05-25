@@ -1,14 +1,12 @@
 package com.tank.game;
 
-import java.awt.Color;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 public class Tank {
 
-	private static BufferedImage image;
+	private TankImage image;
 	private ArrayList<Bullet> activeBullets;
 	private ArrayList<Bullet> nonActiveBullets;
 	private final int maxBullet = 5;
@@ -29,17 +27,15 @@ public class Tank {
 	public static int REDUCED_VELOCITY = 1;
 	
 	private String name;
-	private Color color;
+	private String color;
 
-	public Tank(String name, Color color) {
+	public Tank(String name, String color) {
 		this.name = name;
 		this.color = color;
-		image = TankImage.getImage(this.color);
-		System.out.println("ki");
-		xPosition = (int) (Math.random() * (Window.WIDTH - 3 * Window.BORDER)) + Window.BORDER;
-		yPosition = (int) (Math.random() * (Window.HEIGHT - 3 * Window.BORDER)) + Window.BORDER;
-		System.out.println(xPosition +" "+ yPosition);
-		direction = WEST;
+		image = new TankImage(name,color);
+		xPosition = (int) (Math.random() * (Window.WIDTH * 0.6)) + Window.BORDER;
+		yPosition = (int) (Math.random() * (Window.HEIGHT - (3 * Window.BORDER))) + Window.BORDER;
+		direction = NORTH;
 		velocity = NORMAL_VELOCITY;
 		isDie = false;
 		reloadingState = false;
@@ -66,7 +62,7 @@ public class Tank {
 			tx.rotate(-1*Math.PI/2*Math.abs(delta), image.getWidth()/2, image.getHeight()/2);
 		}
 		AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_BILINEAR);
-		image = op.filter(image, null);
+		image.setImage(op.filter(image.getImage(), null));
 	}
 
 	public void moveUp() {
@@ -101,7 +97,7 @@ public class Tank {
 		}
 	}
 	
-	public BufferedImage getImage(){
+	public TankImage getImage(){
 		return this.image;
 	}
 
@@ -198,7 +194,7 @@ public class Tank {
 		if(isReloading()) {
 			long now = System.currentTimeMillis();
 			double delta = (now - startReloadingTime)/1000;
-			if(delta >= 5) {
+			if(delta >= 3) {
 				reloadingState = false;
 				setVelocity(NORMAL_VELOCITY);
 				Bullet bullet = nonActiveBullets.get(0);
