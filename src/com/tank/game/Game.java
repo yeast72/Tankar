@@ -1,12 +1,9 @@
 package com.tank.game;
 
-import java.awt.Color;
-import java.io.Serializable;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Game implements Serializable {
+public class Game  {
 
 	private static Game instance = null;
 	private List<Player> players;
@@ -77,11 +74,15 @@ public class Game implements Serializable {
 		int index = getPlayerMPIndex(username);
 		this.players.get(index).getTank().setPositionX(x);
 		this.players.get(index).getTank().setPositionY(y);
-//		this.players.get(index).getTank().rotate(this.players.get(index).getTank().getDirection(), direction);
 	}
 	public void playerShoot(String username){
 		int index = getPlayerMPIndex(username);
 		this.players.get(index).getTank().shoot();
+		ArrayList<Bullet> nonActiveBullets = this.players.get(index).getTank().getListOfNonActive();
+		for (int i = 0; i < nonActiveBullets.size(); i++) {
+			nonActiveBullets.get(i).move();
+		}
+		
 	}
 
 	public void updateGame(Game game) {

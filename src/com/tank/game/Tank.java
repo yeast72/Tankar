@@ -17,6 +17,7 @@ public class Tank implements Serializable{
 	private long startReloadingTime;
 	private boolean reloadingState;
 	private boolean isDie;
+	private boolean isShoot;
 
 	public static int velocity;
 
@@ -157,6 +158,7 @@ public class Tank implements Serializable{
 
 	public void shoot() {
 		Bullet bullet = getActiveBullet();
+		isShoot = true;
 		if(bullet != null){
 			bullet.deactivate();
 			bullet.setShooted(true);
@@ -188,6 +190,7 @@ public class Tank implements Serializable{
 			startReloadingTime = System.currentTimeMillis();
 			reloadingState = true;
 			setVelocity(REDUCED_VELOCITY);
+			isShoot = false;
 		}
 	}
 
@@ -221,6 +224,10 @@ public class Tank implements Serializable{
 	
 	public void die() {
 		isDie = true;
+	}
+
+	public boolean isShoot() {
+		return isShoot;
 	}
 	
 

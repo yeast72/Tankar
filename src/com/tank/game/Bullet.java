@@ -7,7 +7,7 @@ import java.net.URL;
 
 import javax.imageio.ImageIO;
 
-public class Bullet implements Serializable {
+public class Bullet {
 	
 	public static BufferedImage image;
 	private int xPosition;
@@ -17,7 +17,7 @@ public class Bullet implements Serializable {
 	private boolean shooted;
 	private boolean isHitEnemy;
 	
-	private final int velocity = 3;
+	public static final int velocity = 3;
 
 
 	public Bullet(int xPos, int yPos){

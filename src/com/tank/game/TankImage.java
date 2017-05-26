@@ -9,11 +9,11 @@ import java.net.URL;
 
 import javax.imageio.ImageIO;
 
-public class TankImage implements Serializable {
+public class TankImage {
 	private URL tankURL;
 	private static int width;
 	private static int height;
-	private transient BufferedImage image;
+	private BufferedImage image;
 	
 	public TankImage(String name, String color){
 		try {

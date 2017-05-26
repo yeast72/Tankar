@@ -6,7 +6,9 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 
+import com.tank.game.Bullet;
 import com.tank.game.Game;
 import com.tank.game.PlayerMP;
 
@@ -15,7 +17,6 @@ import packets.Packet01Disconnect;
 import packets.Packet00Login;
 import packets.Packet02Move;
 import packets.Packet03Shoot;
-import packets.Packet04UpdateGame;
 import packets.Packet.PacketTypes;
 
 
@@ -79,21 +80,11 @@ public class GameClient extends Thread{
 			packet = new Packet03Shoot(data);
 			handleShoot((Packet03Shoot) packet);
 			break;
-		case UPDATE:
-			packet = new Packet04UpdateGame(data);
-			System.out.println("UPDATE CLIENT");
-			handleUpdate((Packet04UpdateGame) packet);
-			break;
 		}
-	}
-	
-	private void handleUpdate(Packet04UpdateGame packet) {
-		this.game.updateGame(packet.getGame());
 	}
 	
 	private void handleShoot(Packet03Shoot packet) {
 		this.game.playerShoot(packet.getUsername());
-		
 	}
 
 	private void handlePacket(Packet02Move packetMove) {

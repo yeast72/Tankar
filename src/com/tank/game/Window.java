@@ -25,7 +25,6 @@ import javax.swing.JTextField;
 import packets.Packet00Login;
 import packets.Packet02Move;
 import packets.Packet03Shoot;
-import packets.Packet04UpdateGame;
 import server.GameClient;
 import server.GameServer;
 
@@ -221,7 +220,10 @@ public class Window extends JFrame implements Runnable {
 			Player p = playerList.get(0);
 			Packet02Move packet = new Packet02Move(p.getName(),p.getColor(),p.getTank().getPositionX(),p.getTank().getPositionY(),p.getTank().getDirection());
 			packet.writeData(gameClientSocket);
-			
+			Packet03Shoot packetShoot = new Packet03Shoot(p.getName(),p.getColor());
+			if(p.getTank().isShoot()){
+				packetShoot.writeData(gameClientSocket);
+			}
 			if (inputHandler.getUp().isPressed()) {
 				p.getTank().moveUp();
 			} else if (inputHandler.getDown().isPressed()) {
@@ -234,8 +236,6 @@ public class Window extends JFrame implements Runnable {
 			if (inputHandler.getSpace().isPressed()) {
 				inputHandler.getSpace().toggle(false);
 				p.getTank().shoot();
-				Packet03Shoot packetShoot = new Packet03Shoot(p.getName(),p.getColor());
-				packetShoot.writeData(gameClientSocket);
 			}
 			if (inputHandler.getReload().isPressed() && !p.getTank().isReloading()) {
 				inputHandler.getReload().toggle(false);
@@ -271,9 +271,6 @@ public class Window extends JFrame implements Runnable {
 		}
 	}
 
-	/**
-	 * output from the tick method
-	 */
 	public void render() {
 		repaint();
 	}
