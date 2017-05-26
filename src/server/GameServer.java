@@ -154,10 +154,12 @@ public class GameServer extends Thread {
 				}
 				alredyConnected = true;
 			} else {
+				Packet00Login packetC = new Packet00Login(p.getName(), p.getColor(),p.getTank().getPositionX(),p.getTank().getPositionY());
+				sendData(packetC.getData(), player.ipAddress, player.port);
+				
 				sendData(packet.getData(), p.ipAddress, p.port);
 
-				packet = new Packet00Login(p.getName(), p.getColor(),p.getTank().getPositionX(),p.getTank().getPositionY());
-				sendData(packet.getData(), player.ipAddress, player.port);
+				
 			}
 		}
 		if (!alredyConnected) {
