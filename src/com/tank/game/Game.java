@@ -1,7 +1,5 @@
 package com.tank.game;
 
-import java.awt.Color;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,9 +11,6 @@ public class Game {
 
 	private Game() {
 		players = new ArrayList<Player>();
-		/*
-		tank = new Tank(Window.BORDER, Window.BORDER);
-		enemy = new Tank(100, 100);*/
 	}
 
 	public static Game getInstance() {
@@ -25,10 +20,6 @@ public class Game {
 		return instance;
 	}
 	
-	/*public Tank getTank() {
-		return players.get(arg0);
-	}*/
-
 	public void start() {
 		startTime = System.currentTimeMillis();
 	}
@@ -46,17 +37,12 @@ public class Game {
 		return false;
 	}
 	
-	/* This part will maintain with 1 player and 1 enemy*/
-	public Player getEnemy(){
-		return players.get(1);
-	}
 	public void addPlayer(Player player){
 		players.add(new Player(player.getName(),player.getColor()));
 	}
 	
 	public void createNewPlayer(String name, String txtColor){ 
 		players.add(new Player(name, txtColor));
-//		players.add(new Player("Eoop", "Green")); // create 1 enemy for checking hitting function
 	}
 	
 	public List<Player> getAllPlayers(){
@@ -88,6 +74,7 @@ public class Game {
 		int index = getPlayerMPIndex(username);
 		this.players.get(index).getTank().setPositionX(x);
 		this.players.get(index).getTank().setPositionY(y);
+	//	this.players.get(index).getTank().rotate(this.players.get(index).getTank().getDirection(), direction);
 	}
 	public void playerShoot(String username){
 		int index = getPlayerMPIndex(username);
