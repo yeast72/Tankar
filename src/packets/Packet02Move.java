@@ -16,6 +16,7 @@ public class Packet02Move extends Packet{
 		this.color = dataArray[2];
 		this.x = Integer.parseInt(dataArray[3]);
 		this.y = Integer.parseInt(dataArray[4]);
+		this.direction = Integer.parseInt(dataArray[5]);
 	}
 	public Packet02Move(String username,String color,int x,int y, int direction){
 		super(02);
