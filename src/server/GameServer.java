@@ -119,7 +119,7 @@ public class GameServer extends Thread {
 			int direction = packetMove.getDirection();
 			this.connectedPlayers.get(index).getTank().setPositionX(tankPosX);
 			this.connectedPlayers.get(index).getTank().setPositionY(tankPosY);
-			this.connectedPlayers.get(index).getTank().rotate(this.connectedPlayers.get(index).getTank().getDirection(), direction);
+//			this.connectedPlayers.get(index).getTank().rotate(this.connectedPlayers.get(index).getTank().getDirection(), direction);
 			packetMove.writeData(this);
 		}
 		

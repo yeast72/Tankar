@@ -89,7 +89,6 @@ public class GameClient extends Thread{
 	
 	private void handleUpdate(Packet04UpdateGame packet) {
 		this.game.updateGame(packet.getGame());
-		System.out.print("Newwww");
 	}
 	
 	private void handleShoot(Packet03Shoot packet) {

@@ -219,7 +219,7 @@ public class Window extends JFrame implements Runnable {
 		
 		if (playerList.size() >= 1) {
 			Player p = playerList.get(0);
-			Packet04UpdateGame packet = new Packet04UpdateGame(this.game);
+			Packet02Move packet = new Packet02Move(p.getName(),p.getColor(),p.getTank().getPositionX(),p.getTank().getPositionY(),p.getTank().getDirection());
 			packet.writeData(gameClientSocket);
 			
 			if (inputHandler.getUp().isPressed()) {
