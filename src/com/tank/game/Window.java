@@ -187,7 +187,6 @@ public class Window extends JFrame implements Runnable {
 				ticks++;
 				tick();
 				delta -= 1;
-				// shouldRender = true;
 			}
 
 			try {
@@ -218,6 +217,7 @@ public class Window extends JFrame implements Runnable {
 		List<Player> playerList = game.getAllPlayers();
 		
 		if (playerList.size() >= 1) {
+			
 			Player p = playerList.get(0);
 			Packet02Move packet = new Packet02Move(p.getName(),p.getColor(),p.getTank().getPositionX(),p.getTank().getPositionY(),p.getTank().getDirection());
 			packet.writeData(gameClientSocket);
@@ -242,8 +242,14 @@ public class Window extends JFrame implements Runnable {
 				p.getTank().reloadBullet();
 			}
 			for(Player enemy : playerList){
-				if(!enemy.equals(p))
+				if(playerList.size() == 1){
+					updateBullet(p,null);
+					enemy.increasingScore();
+				}
+				if(!enemy.equals(p)){
 					updateBullet(p, enemy);
+					enemy.increasingScore();
+				}
 			}
 			
 		}
@@ -251,10 +257,15 @@ public class Window extends JFrame implements Runnable {
 	
 	public void updateBullet(Player p, Player enemy){
 		p.getTank().checkIfRelaodingFinished();
-		p.getTank().checkHitEnemy(enemy.getTank());
+		if(enemy != null)
+			if(p.getTank().checkHitEnemy(enemy.getTank())){
+				p.increasingScore();
+				game.getAllPlayers().remove(enemy);
+			}
 		ArrayList<Bullet> nonActiveBullets = p.getTank().getListOfNonActive();
 		for (int i = 0; i < nonActiveBullets.size(); i++) {
-			nonActiveBullets.get(i).changeIsHitEnemyStatus(enemy.getTank().getPositionX(),
+			if(enemy != null)
+				nonActiveBullets.get(i).changeIsHitEnemyStatus(enemy.getTank().getPositionX(),
 					enemy.getTank().getPositionY());
 			nonActiveBullets.get(i).move();
 		}
