@@ -2,7 +2,7 @@ package com.tank.game;
 
 import java.io.Serializable;
 
-public class Player implements Serializable {
+public class Player {
 	private String name;
 	private String color;
 	private int score;

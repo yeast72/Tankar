@@ -5,13 +5,12 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.tank.game.Bullet;
 import com.tank.game.Game;
 import com.tank.game.PlayerMP;
-import com.tank.game.Tank;
 
 import packets.Packet;
 import packets.Packet.PacketTypes;
@@ -19,7 +18,6 @@ import packets.Packet01Disconnect;
 import packets.Packet02Move;
 import packets.Packet00Login;
 import packets.Packet03Shoot;
-import packets.Packet04UpdateGame;
 
 public class GameServer extends Thread {
 	private DatagramSocket socket;
@@ -46,15 +44,6 @@ public class GameServer extends Thread {
 				e.printStackTrace();
 			}
 			this.parsePacket(packet.getData(), packet.getAddress(), packet.getPort());
-			// String message = new String(packet.getData());
-			//
-			// if (message.trim().equalsIgnoreCase("ping")) {
-			// System.out.println(
-			// "CLIENT [" + packet.getAddress().getHostAddress() + ":" +
-			// packet.getPort() + " ] > " + message);
-			// sendData("pong".getBytes(), packet.getAddress(),
-			// packet.getPort());
-			// }
 		}
 	}
 
@@ -90,23 +79,17 @@ public class GameServer extends Thread {
 			System.out.println(((Packet03Shoot) packet).getUsername() +" shoot");
 			this.handleShoot((Packet03Shoot) packet);
 			break;
-		case UPDATE:
-			packet = new Packet04UpdateGame(data);
-			System.out.println("Update game");
-			handleUpdate((Packet04UpdateGame) packet);
-			break;
 		}
-	}
-	
-	private void handleUpdate(Packet04UpdateGame packet) {
-		this.game.updateGame(packet.getGame());
-		packet.writeData(this);
 	}
 
 	private void handleShoot(Packet03Shoot packet) {
 		if(getPlayerMP(packet.getUsername()) != null){
 			int index = getPlayerIndex(packet.getUsername());
 			this.connectedPlayers.get(index).getTank().shoot();
+			ArrayList<Bullet> nonActiveBullets = this.connectedPlayers.get(index).getTank().getListOfNonActive();
+			for (int i = 0; i < nonActiveBullets.size(); i++) {
+				nonActiveBullets.get(i).move();
+			}
 			packet.writeData(this);
 		}
 	}
