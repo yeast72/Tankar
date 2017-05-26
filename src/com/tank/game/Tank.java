@@ -2,9 +2,10 @@ package com.tank.game;
 
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Tank {
+public class Tank implements Serializable{
 
 	private TankImage image;
 	private ArrayList<Bullet> activeBullets;

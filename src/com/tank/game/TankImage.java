@@ -4,15 +4,16 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.URL;
 
 import javax.imageio.ImageIO;
 
-public class TankImage {
+public class TankImage implements Serializable {
 	private URL tankURL;
 	private static int width;
 	private static int height;
-	private BufferedImage image;
+	private transient BufferedImage image;
 	
 	public TankImage(String name, String color){
 		try {

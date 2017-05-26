@@ -25,6 +25,7 @@ import javax.swing.JTextField;
 import packets.Packet00Login;
 import packets.Packet02Move;
 import packets.Packet03Shoot;
+import packets.Packet04UpdateGame;
 import server.GameClient;
 import server.GameServer;
 
@@ -218,9 +219,8 @@ public class Window extends JFrame implements Runnable {
 		
 		if (playerList.size() >= 1) {
 			Player p = playerList.get(0);
-			Packet02Move packet = new Packet02Move(p.getName(),p.getColor(),p.getTank().getPositionX(),p.getTank().getPositionY(), p.getTank().getDirection());
+			Packet04UpdateGame packet = new Packet04UpdateGame(this.game);
 			packet.writeData(gameClientSocket);
-			
 			if (inputHandler.getUp().isPressed()) {
 				p.getTank().moveUp();
 			} else if (inputHandler.getDown().isPressed()) {

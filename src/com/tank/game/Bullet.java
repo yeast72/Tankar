@@ -2,11 +2,12 @@ package com.tank.game;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.URL;
 
 import javax.imageio.ImageIO;
 
-public class Bullet {
+public class Bullet implements Serializable {
 	
 	public static BufferedImage image;
 	private int xPosition;

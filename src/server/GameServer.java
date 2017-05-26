@@ -19,6 +19,7 @@ import packets.Packet01Disconnect;
 import packets.Packet02Move;
 import packets.Packet00Login;
 import packets.Packet03Shoot;
+import packets.Packet04UpdateGame;
 
 public class GameServer extends Thread {
 	private DatagramSocket socket;
@@ -89,7 +90,17 @@ public class GameServer extends Thread {
 			System.out.println(((Packet03Shoot) packet).getUsername() +" shoot");
 			this.handleShoot((Packet03Shoot) packet);
 			break;
+		case UPDATE:
+			packet = new Packet04UpdateGame(data);
+			System.out.println("Update game");
+			handleUpdate((Packet04UpdateGame) packet);
+			break;
 		}
+	}
+	
+	private void handleUpdate(Packet04UpdateGame packet) {
+		this.game.updateGame(packet.getGame());
+		packet.writeData(this);
 	}
 
 	private void handleShoot(Packet03Shoot packet) {
@@ -98,7 +109,6 @@ public class GameServer extends Thread {
 			this.connectedPlayers.get(index).getTank().shoot();
 			packet.writeData(this);
 		}
-		
 	}
 
 	private void handleMove(Packet02Move packetMove) {
