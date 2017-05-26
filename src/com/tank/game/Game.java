@@ -74,7 +74,6 @@ public class Game {
 		int index = getPlayerMPIndex(username);
 		this.players.get(index).getTank().setPositionX(x);
 		this.players.get(index).getTank().setPositionY(y);
-	//	this.players.get(index).getTank().rotate(this.players.get(index).getTank().getDirection(), direction);
 	}
 	public void playerShoot(String username){
 		int index = getPlayerMPIndex(username);

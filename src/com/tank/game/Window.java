@@ -102,11 +102,8 @@ public class Window extends JFrame implements Runnable {
 		submit.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-//				game.createNewPlayer(username.getText(), colorChoice.getSelectedItem().toString());
-//				game.addPlayer(new Player(username.getText(),colorChoice.getSelectedItem().toString()));
 				playerName = username.getText();
 				playerColor = colorChoice.getSelectedItem().toString();
-				
 				player = new PlayerMP(playerName , playerColor , gameClientSocket.getIPAddress(),1);
 				game.addPlayer(player);
 				Packet00Login loginPacket = new Packet00Login(player.getName(),player.getColor(),player.getTank().getPositionX(),player.getTank().getPositionY());
@@ -210,13 +207,9 @@ public class Window extends JFrame implements Runnable {
 		}
 	}
 	
-	/**
-	 * update all internal variable, and game logic
-	 */
 	public void tick() {
 		tickCount++;
 		running = game.isDone();
-		/* This part will maintain with only one player */
 		List<Player> p1 = game.getAllPlayers();
 		
 		if (p1.size() >= 1) {
@@ -244,8 +237,11 @@ public class Window extends JFrame implements Runnable {
 				p.getTank().reloadBullet();
 			}
 			for(Player enemy : p1){
-				if(!enemy.equals(p))
+				if(p1.size() == 1)
+					updateBullet(p,null);
+				else if(!enemy.equals(p))
 					updateBullet(p, enemy);
+				
 			}
 			
 		}
@@ -253,18 +249,17 @@ public class Window extends JFrame implements Runnable {
 	
 	public void updateBullet(Player p, Player enemy){
 		p.getTank().checkIfRelaodingFinished();
-		p.getTank().checkHitEnemy(enemy.getTank());
+		if(enemy != null)
+			p.getTank().checkHitEnemy(enemy.getTank());
 		ArrayList<Bullet> nonActiveBullets = p.getTank().getListOfNonActive();
 		for (int i = 0; i < nonActiveBullets.size(); i++) {
-			nonActiveBullets.get(i).changeIsHitEnemyStatus(enemy.getTank().getPositionX(),
+			if(enemy != null)
+				nonActiveBullets.get(i).changeIsHitEnemyStatus(enemy.getTank().getPositionX(),
 					enemy.getTank().getPositionY());
 			nonActiveBullets.get(i).move();
 		}
 	}
 
-	/**
-	 * output from the tick method
-	 */
 	public void render() {
 		repaint();
 	}

@@ -24,6 +24,7 @@ public class Packet02Move extends Packet{
 		this.x = x;
 		this.y = y;
 	}
+	
 	@Override
 	public void writeData(GameClient client) {
 		client.sendData(getData());

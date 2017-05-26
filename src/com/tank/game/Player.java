@@ -29,4 +29,8 @@ public class Player {
 	public Tank getTank(){
 		return this.tank;
 	}
+
+	public void updateTank(Tank tank) {
+		this.tank = tank;
+	}
 }

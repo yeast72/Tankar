@@ -34,7 +34,7 @@ public class Tank {
 		this.color = color;
 		image = new TankImage(name,color);
 		xPosition = (int) (Math.random() * (Window.WIDTH * 0.6)) + Window.BORDER;
-		yPosition = (int) (Math.random() * (Window.HEIGHT - (3 * Window.BORDER))) + Window.BORDER;
+		yPosition = (int) (Math.random() * (Window.HEIGHT * 0.6)) + Window.BORDER;
 		direction = NORTH;
 		velocity = NORMAL_VELOCITY;
 		isDie = false;
@@ -221,6 +221,9 @@ public class Tank {
 	public void die() {
 		isDie = true;
 	}
-	
+
+	public void setDirection(int direction) {
+		this.direction = direction;		
+	}
 
 }
