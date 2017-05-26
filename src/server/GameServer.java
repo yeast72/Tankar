@@ -18,6 +18,7 @@ import packets.Packet01Disconnect;
 import packets.Packet02Move;
 import packets.Packet00Login;
 import packets.Packet03Shoot;
+import packets.Packet04Reload;
 
 public class GameServer extends Thread {
 	private DatagramSocket socket;
@@ -36,6 +37,7 @@ public class GameServer extends Thread {
 
 	public void run() {
 		while (true) {
+			
 			byte[] data = new byte[1024];
 			DatagramPacket packet = new DatagramPacket(data, data.length);
 			try {
@@ -44,6 +46,11 @@ public class GameServer extends Thread {
 				e.printStackTrace();
 			}
 			this.parsePacket(packet.getData(), packet.getAddress(), packet.getPort());
+			for(PlayerMP p : connectedPlayers){
+				if(p.getTank().checkIfRelaodingFinished()){
+					sendData(p.getName().getBytes(),p.ipAddress,p.port);
+				}
+			}
 		}
 	}
 
@@ -79,17 +86,27 @@ public class GameServer extends Thread {
 			System.out.println(((Packet03Shoot) packet).getUsername() +" shoot");
 			this.handleShoot((Packet03Shoot) packet);
 			break;
+		case RELOAD:
+			packet = new Packet04Reload(data);
+			System.out.println(((Packet04Reload) packet).getUsername() + "has reload");
+			this.handleReload((Packet04Reload) packet);
+			break;
 		}
+	}
+
+	private void handleReload(Packet04Reload packet) {
+		int index = getPlayerIndex(packet.getUsername());
+		this.connectedPlayers.get(index).getTank().reloadBullet();
+		packet.writeData(this);
+		System.out.println(this.connectedPlayers.get(index).getName() + " :Reload bullet");
+		
 	}
 
 	private void handleShoot(Packet03Shoot packet) {
 		if(getPlayerMP(packet.getUsername()) != null){
 			int index = getPlayerIndex(packet.getUsername());
+			System.out.println("active bullet  "+this.connectedPlayers.get(index).getTank().getActiveBullet());
 			this.connectedPlayers.get(index).getTank().shoot();
-			ArrayList<Bullet> nonActiveBullets = this.connectedPlayers.get(index).getTank().getListOfNonActive();
-			for (int i = 0; i < nonActiveBullets.size(); i++) {
-				nonActiveBullets.get(i).move();
-			}
 			packet.writeData(this);
 		}
 	}
@@ -102,7 +119,11 @@ public class GameServer extends Thread {
 			int direction = packetMove.getDirection();
 			this.connectedPlayers.get(index).getTank().setPositionX(tankPosX);
 			this.connectedPlayers.get(index).getTank().setPositionY(tankPosY);
-//			this.connectedPlayers.get(index).getTank().rotate(this.connectedPlayers.get(index).getTank().getDirection(), direction);
+			
+			ArrayList<Bullet> nonActiveBullets = this.connectedPlayers.get(index).getTank().getListOfNonActive();
+			for (int i = 0; i < nonActiveBullets.size(); i++) {
+				nonActiveBullets.get(i).move();
+			}
 			packetMove.writeData(this);
 		}
 		

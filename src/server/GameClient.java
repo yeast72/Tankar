@@ -17,6 +17,7 @@ import packets.Packet01Disconnect;
 import packets.Packet00Login;
 import packets.Packet02Move;
 import packets.Packet03Shoot;
+import packets.Packet04Reload;
 import packets.Packet.PacketTypes;
 
 
@@ -80,9 +81,19 @@ public class GameClient extends Thread{
 			packet = new Packet03Shoot(data);
 			handleShoot((Packet03Shoot) packet);
 			break;
+		case RELOAD:
+			packet = new Packet04Reload(data);
+			System.out.println(((Packet04Reload) packet).getUsername() +" reloaded");
+			handleReload((Packet04Reload) packet);
+			break;
 		}
 	}
 	
+	private void handleReload(Packet04Reload packet) {
+		this.game.playerReload(packet.getUsername());
+		
+	}
+
 	private void handleShoot(Packet03Shoot packet) {
 		this.game.playerShoot(packet.getUsername());
 	}

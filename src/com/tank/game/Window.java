@@ -23,8 +23,10 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import packets.Packet00Login;
+import packets.Packet01Disconnect;
 import packets.Packet02Move;
 import packets.Packet03Shoot;
+import packets.Packet04Reload;
 import server.GameClient;
 import server.GameServer;
 
@@ -220,9 +222,9 @@ public class Window extends JFrame implements Runnable {
 			Player p = playerList.get(0);
 			Packet02Move packet = new Packet02Move(p.getName(),p.getColor(),p.getTank().getPositionX(),p.getTank().getPositionY(),p.getTank().getDirection());
 			packet.writeData(gameClientSocket);
-			Packet03Shoot packetShoot = new Packet03Shoot(p.getName(),p.getColor());
+			
 			if(p.getTank().isShoot()){
-				packetShoot.writeData(gameClientSocket);
+				
 			}
 			if (inputHandler.getUp().isPressed()) {
 				p.getTank().moveUp();
@@ -235,10 +237,14 @@ public class Window extends JFrame implements Runnable {
 			}
 			if (inputHandler.getSpace().isPressed()) {
 				inputHandler.getSpace().toggle(false);
+				Packet03Shoot packetShoot = new Packet03Shoot(p.getName(),p.getColor());
+				packetShoot.writeData(gameClientSocket);
 				p.getTank().shoot();
 			}
 			if (inputHandler.getReload().isPressed() && !p.getTank().isReloading()) {
 				inputHandler.getReload().toggle(false);
+				Packet04Reload packetReload = new Packet04Reload(p.getName(),p.getColor());
+				packetReload.writeData(gameClientSocket);
 				p.getTank().reloadBullet();
 			}
 			for(Player enemy : playerList){
@@ -259,6 +265,8 @@ public class Window extends JFrame implements Runnable {
 		p.getTank().checkIfRelaodingFinished();
 		if(enemy != null)
 			if(p.getTank().checkHitEnemy(enemy.getTank())){
+				Packet01Disconnect packetDisconnect = new Packet01Disconnect(p.getName(),p.getColor());
+				packetDisconnect.writeData(gameClientSocket);
 				p.increasingScore();
 				game.getAllPlayers().remove(enemy);
 			}

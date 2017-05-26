@@ -74,6 +74,11 @@ public class Game  {
 		int index = getPlayerMPIndex(username);
 		this.players.get(index).getTank().setPositionX(x);
 		this.players.get(index).getTank().setPositionY(y);
+		this.players.get(index).getTank().checkIfRelaodingFinished();
+		ArrayList<Bullet> nonActiveBullets = this.players.get(index).getTank().getListOfNonActive();
+		for (int i = 0; i < nonActiveBullets.size(); i++) {
+			nonActiveBullets.get(i).move();
+		}
 	}
 	public void playerShoot(String username){
 		int index = getPlayerMPIndex(username);
@@ -87,6 +92,12 @@ public class Game  {
 
 	public void updateGame(Game game) {
 		instance = game ;
+	}
+
+	public void playerReload(String username) {
+		int index= getPlayerMPIndex(username);
+		this.players.get(index).getTank().reloadBullet();
+		
 	}
 
 }
