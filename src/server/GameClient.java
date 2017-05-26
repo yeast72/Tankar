@@ -81,6 +81,7 @@ public class GameClient extends Thread{
 			break;
 		case UPDATE:
 			packet = new Packet04UpdateGame(data);
+			System.out.println("UPDATE CLIENT");
 			handleUpdate((Packet04UpdateGame) packet);
 			break;
 		}

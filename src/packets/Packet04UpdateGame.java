@@ -21,9 +21,9 @@ public class Packet04UpdateGame extends Packet{
 		this.game = game;
 
 	}
+	
 	@Override
 	public void writeData(GameClient client) {
-		System.out.println("test1");
 		client.sendData(getData());
 	}
 	@Override
@@ -33,19 +33,8 @@ public class Packet04UpdateGame extends Packet{
 	}
 	@Override
 	public byte[] getData() {
-		ByteArrayOutputStream byteData = new ByteArrayOutputStream(1024);
-		ObjectOutputStream obj = null;
-		try {
-			obj = new ObjectOutputStream(byteData);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		try {
-			obj.writeObject(this.game);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return byteData.toByteArray();
+		return ("04" + " " + this.game).getBytes();
+
 	}
 	public Game getGame() {
 		return this.game;

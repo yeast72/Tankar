@@ -221,6 +221,7 @@ public class Window extends JFrame implements Runnable {
 			Player p = playerList.get(0);
 			Packet04UpdateGame packet = new Packet04UpdateGame(this.game);
 			packet.writeData(gameClientSocket);
+			
 			if (inputHandler.getUp().isPressed()) {
 				p.getTank().moveUp();
 			} else if (inputHandler.getDown().isPressed()) {
