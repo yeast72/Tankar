@@ -11,6 +11,7 @@ import java.util.List;
 
 import com.tank.game.Game;
 import com.tank.game.PlayerMP;
+import com.tank.game.Tank;
 
 import packets.Packet;
 import packets.Packet.PacketTypes;
@@ -105,8 +106,10 @@ public class GameServer extends Thread {
 			int index = getPlayerIndex(packetMove.getUsername());
 			int tankPosX = packetMove.getX();
 			int tankPosY = packetMove.getY();
+			int direction = packetMove.getDirection();
 			this.connectedPlayers.get(index).getTank().setPositionX(tankPosX);
 			this.connectedPlayers.get(index).getTank().setPositionY(tankPosY);
+			this.connectedPlayers.get(index).getTank().rotate(this.connectedPlayers.get(index).getTank().getDirection(), direction);
 			packetMove.writeData(this);
 		}
 		

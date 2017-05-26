@@ -87,7 +87,7 @@ public class GameClient extends Thread{
 	}
 
 	private void handlePacket(Packet02Move packetMove) {
-		this.game.movePlayer(packetMove.getUsername(), packetMove.getX(), packetMove.getY());
+		this.game.movePlayer(packetMove.getUsername(), packetMove.getX(), packetMove.getY(), packetMove.getDirection());
 	}
 	
 	private void handleLogin(Packet00Login packetLogin,InetAddress address,int port){

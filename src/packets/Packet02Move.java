@@ -7,7 +7,7 @@ public class Packet02Move extends Packet{
 
 	private String username;
 	private String color;
-	private int x,y;
+	private int x,y, direction;
 	
 	public Packet02Move(byte[] data){
 		super(02);
@@ -17,14 +17,14 @@ public class Packet02Move extends Packet{
 		this.x = Integer.parseInt(dataArray[3]);
 		this.y = Integer.parseInt(dataArray[4]);
 	}
-	public Packet02Move(String username,String color,int x,int y){
+	public Packet02Move(String username,String color,int x,int y, int direction){
 		super(02);
 		this.username = username;
 		this.color = color;
 		this.x = x;
 		this.y = y;
+		this.direction = direction;
 	}
-	
 	@Override
 	public void writeData(GameClient client) {
 		client.sendData(getData());
@@ -37,7 +37,7 @@ public class Packet02Move extends Packet{
 	}
 	@Override
 	public byte[] getData() {
-		return ("02" +" " + this.username +" " + this.color + " " + this.x + " " + this.y).getBytes();
+		return ("02" +" " + this.username +" " + this.color + " " + this.x + " " + this.y+" "+this.direction).getBytes();
 	}
 	
 	public String getUsername(){
@@ -52,5 +52,8 @@ public class Packet02Move extends Packet{
 	}
 	public int getY(){
 		return this.y;
+	}
+	public int getDirection() {
+		return this.direction;
 	}
 }
