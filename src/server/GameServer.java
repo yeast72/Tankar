@@ -105,7 +105,6 @@ public class GameServer extends Thread {
 	private void handleShoot(Packet03Shoot packet) {
 		if(getPlayerMP(packet.getUsername()) != null){
 			int index = getPlayerIndex(packet.getUsername());
-			System.out.println("active bullet  "+this.connectedPlayers.get(index).getTank().getActiveBullet());
 			this.connectedPlayers.get(index).getTank().shoot();
 			packet.writeData(this);
 		}
@@ -160,7 +159,6 @@ public class GameServer extends Thread {
 		for (PlayerMP p : this.connectedPlayers) {
 			if (player.getName().equalsIgnoreCase(p.getName())) {
 				if (p.ipAddress == null) {
-					System.out.println("checked");
 					p.ipAddress = player.ipAddress;
 				}
 				if (p.port == 1) {

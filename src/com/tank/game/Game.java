@@ -58,7 +58,6 @@ public class Game  {
 			index++;
 		}
 		this.players.remove(index);
-		System.out.println("amount of player = " + players.size());
 	}
 	private int getPlayerMPIndex(String username){
 		int index = 0;
